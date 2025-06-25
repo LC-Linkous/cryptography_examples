@@ -4,13 +4,20 @@
 #   encryption_examples
 #   './encryption_examples/src/stream/rc4/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun. 
+#   In order to use the actual encryption class it needed some prompting.
+
+#   WARNING: "data" generated in test cases could be just random strings. 
+#   If it is NOT GENERATED, there is no guarantee that it is accurate.
+#
+#
 #   Claude also added some additional commentary, which is neat. 
 #   (There's a lot of Claude AI commentary in this one, it can be commented out)
 #
-#   Last update: June 22, 2025
+#   Last update: June 25, 2025
 ##--------------------------------------------------------------------\
 
 import pandas as pd
+from encrypt import encrypt
 from decrypt import decrypt
 
 
@@ -19,45 +26,37 @@ print("=== RC4 Stream Cipher Decrypt Class Example ===")
 # First, let's create some test ciphertext by "encrypting" known messages
 print("\n=== CREATING TEST CASES ===")
 
-# We'll simulate some encrypted messages for testing
-test_cases = [
-    {
-        'name': 'Simple Message',
-        'ciphertext': 'A1B2C3',  # This would be actual RC4 output
-        'key': 'SECRET',
-        'format': 'HEX'
-    },
-    {
-        'name': 'Different Key',
-        'ciphertext': 'D4E5F6',  # Different RC4 output
-        'key': 'TEST',
-        'format': 'HEX'
-    }
-]
-
 # For proper testing, let's encrypt some messages first
 print("Creating proper test cases by encrypting known messages...")
-
-# Simulate the encrypt process to get real test data
-from encrypt import encrypt as RC4Encrypt  # This would import your encrypt class
-
-# Since we can't import the other class in this demo, let's create test data manually
-# In practice, you'd use the encrypt class to create these
 
 real_test_cases = [
     {
         'name': 'HELLO with SECRET',
         'plaintext': 'HELLO',
         'key': 'SECRET',
-        'ciphertext_hex': '94C230F3C5',  # This would be real RC4 output
     },
     {
         'name': 'RC4 TEST with KEY',
         'plaintext': 'RC4 TEST',
         'key': 'KEY',
-        'ciphertext_hex': '1DA5B2C3D4E5F6A7',  # This would be real RC4 output
+    },
+    {
+        'name': 'Different Key',
+        'plaintext': 'TEST',
+        'key': 'DIFFERENT',
     }
 ]
+
+# Generate real ciphertext using encrypt class
+for case in real_test_cases:
+    encrypt_options = pd.DataFrame({
+        'KEY': [case['key']],
+        'OUTPUT_FORMAT': ['HEX'],
+        'SHOW_STEPS': [False]
+    })
+    
+    encryptor = encrypt(None, encrypt_options)
+    case['ciphertext_hex'] = encryptor.encrypt_message(case['plaintext'])
 
 print(f"\n{'='*60}")
 print("TESTING RC4 DECRYPTION")
@@ -73,14 +72,14 @@ configurations = [
     },
     {
         'name': 'Detailed Steps',
-        'KEY': ['TEST'],
+        'KEY': ['KEY'],
         'INPUT_FORMAT': ['HEX'],
         'SHOW_STEPS': [True]
     },
     {
         'name': 'Decimal Input',
-        'KEY': ['KEY'],
-        'INPUT_FORMAT': ['DECIMAL'],
+        'KEY': ['DIFFERENT'],
+        'INPUT_FORMAT': ['HEX'],
         'SHOW_STEPS': [False]
     }
 ]
@@ -103,12 +102,28 @@ for config in configurations:
     for key, value in stats.items():
         print(f"  {key}: {value}")
     
-    # For detailed steps, use a simple example
-    if config['SHOW_STEPS'][0]:
+    # Test with real encrypted data
+    test_key = config['KEY'][0]
+    matching_case = next((case for case in real_test_cases if case['key'] == test_key), None)
+    
+    if matching_case:
+        print(f"\nTesting with real encrypted data:")
+        try:
+            result = cipher.decrypt_message(matching_case['ciphertext_hex'])
+            print(f"Ciphertext: {matching_case['ciphertext_hex']}")
+            print(f"Result: '{result}'")
+            print(f"Expected: '{matching_case['plaintext']}'")
+            print(f"Match: {'✓' if result == matching_case['plaintext'] else '✗'}")
+        except Exception as e:
+            print(f"Error: {e}")
+    
+    # For detailed steps, use the matching case
+    elif config['SHOW_STEPS'][0]:
         print(f"\nTesting with detailed steps:")
         try:
-            test_hex = "A1B2C3D4"
-            result = cipher.decrypt_message(test_hex)
+            # Use the KEY case for detailed demo
+            key_case = next(case for case in real_test_cases if case['key'] == 'KEY')
+            result = cipher.decrypt_message(key_case['ciphertext_hex'])
             print(f"Result: '{result}'")
         except Exception as e:
             print(f"Error: {e}")
@@ -119,30 +134,88 @@ print('='*60)
 
 # Demonstrate the key insight: encryption = decryption
 demo_cipher = decrypt(None, pd.DataFrame({'KEY': ['DEMO'], 'INPUT_FORMAT': ['HEX'], 'SHOW_STEPS': [False]}))
-demo_cipher.demonstrate_symmetry("SECRET", "KEY")
+if hasattr(demo_cipher, 'demonstrate_symmetry'):
+    demo_cipher.demonstrate_symmetry("SECRET", "KEY")
+else:
+    print("Demonstrating RC4 symmetry with real data:")
+    
+    # Show that encrypt and decrypt are identical operations
+    demo_text = "SYMMETRY"
+    demo_key = "DEMO"
+    
+    # Encrypt
+    encrypt_options = pd.DataFrame({
+        'KEY': [demo_key],
+        'OUTPUT_FORMAT': ['HEX'],
+        'SHOW_STEPS': [False]
+    })
+    encryptor = encrypt(None, encrypt_options)
+    encrypted = encryptor.encrypt_message(demo_text)
+    
+    # Decrypt
+    decrypt_options = pd.DataFrame({
+        'KEY': [demo_key],
+        'INPUT_FORMAT': ['HEX'],
+        'SHOW_STEPS': [False]
+    })
+    decryptor = decrypt(None, decrypt_options)
+    decrypted = decryptor.decrypt_message(encrypted)
+    
+    print(f"Original: '{demo_text}'")
+    print(f"Encrypted: {encrypted}")
+    print(f"Decrypted: '{decrypted}'")
+    print(f"RC4 Symmetry: {'✓ CONFIRMED' if decrypted == demo_text else '✗ FAILED'}")
 
 print(f"\n{'='*60}")
-print("BRUTE FORCE DECRYPTION DEMO")
+print("DECRYPTION DEMO")
 print('='*60)
 
-# Demonstrate brute force attack
+# Demonstrate attack with real encrypted data
 brute_cipher = decrypt(None, pd.DataFrame({'KEY': [''], 'INPUT_FORMAT': ['HEX'], 'SHOW_STEPS': [False]}))
 
-# Test with a sample ciphertext (in practice, this would be real RC4 output)
-sample_ciphertext = "A1B2C3D4E5"
+# Use one of our real test cases
+sample_case = real_test_cases[0]  # HELLO with SECRET
+sample_ciphertext = sample_case['ciphertext_hex']
 
 print(f"Attempting to decrypt: {sample_ciphertext}")
-brute_cipher.analyze_ciphertext(sample_ciphertext)
+print(f"(This was '{sample_case['plaintext']}' encrypted with key '{sample_case['key']}')")
+
+if hasattr(brute_cipher, 'analyze_ciphertext'):
+    brute_cipher.analyze_ciphertext(sample_ciphertext)
 
 print(f"\nTrying brute force attack:")
-try:
-    result = brute_cipher.auto_decrypt(sample_ciphertext, top_n=5, max_keys=15)
-    print(f"Best guess: '{result}'")
-except Exception as e:
-    print(f"Brute force failed: {e}")
+if hasattr(brute_cipher, 'auto_decrypt'):
+    try:
+        result = brute_cipher.auto_decrypt(sample_ciphertext, top_n=5, max_keys=15)
+        print(f"Best guess: '{result}'")
+    except Exception as e:
+        print(f"Brute force failed: {e}")
+else:
+    # Simple brute force attempt with common keys
+    common_keys = ['SECRET', 'KEY', 'PASSWORD', 'TEST', 'HELLO', 'ABC', '123']
+    print("Trying common keys:")
+    
+    for test_key in common_keys:
+        try:
+            test_options = pd.DataFrame({
+                'KEY': [test_key],
+                'INPUT_FORMAT': ['HEX'],
+                'SHOW_STEPS': [False]
+            })
+            test_cipher = decrypt(None, test_options)
+            result = test_cipher.decrypt_message(sample_ciphertext)
+            
+            print(f"  Key '{test_key}': '{result}'", end="")
+            if result == sample_case['plaintext']:
+                print(" ✓ MATCH!")
+                break
+            else:
+                print()
+        except:
+            print(f"  Key '{test_key}': ERROR")
 
 print(f"\n{'='*60}")
-print("RC4 DECRYPT EDUCATIONAL SUMMARY")
+print("RC4 DECRYPT SUMMARY")
 print('='*60)
 print("""
 RC4 DECRYPTION KEY INSIGHTS:
@@ -190,4 +263,3 @@ MODERN LESSONS:
 - Use cryptographically secure keys
 - Implement proper key management
 """)
-
