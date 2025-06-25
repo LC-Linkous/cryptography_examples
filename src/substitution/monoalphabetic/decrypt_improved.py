@@ -9,7 +9,7 @@
 #  Instead, this decryption process uses the statistical properties of English text (primarily frequency analysis and bi/tri grams) 
 #  to gradually discover the correct substitution key through intelligent search and optimization.
 #
-#   The original 'decrypt.pt' class for this cipher uses a 'hill climbing' approach, which only accepts new solutions that are
+#   The original 'decrypt.py' class for this cipher uses a 'hill climbing' approach, which only accepts new solutions that are
 #   BETTER than the previous answer. This can cause the algorithm to get stuck in a local optima since it cannot 'backtrack'
 #   This class changes the approach to one called 'simulated annealing' (and some genetic algorithm backup), which will allow for some
 #   'backtracking' by accepting solutions that are slightly worse (within a % margin or probability) in order to find a global solution.
