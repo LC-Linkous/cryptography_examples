@@ -10,6 +10,9 @@ Each encryption method has its own folder with the following:
 * `encrypt_test.py` - an LLM generated test case for encryption
 * `decrypt_test.py` - an LLM generated test case for decryption
 
+These four files are the core demonstration of each algorithm. In some directories there may be additional files such as `decrypt_improved.py` or `decrypt_improved_test.py`. The contents of additional files are discussed in the [Discussion Section](#some-algorithm-discussion) under their specific algorithm.
+
+
 Claude AI was used to generate the test cases for the **public** version of this repo, in order to not give away any hints for the group assignments or demos. Claude AI also inserts extra commentary and examples, which is pretty fun for creating samples. `NOTE:` these test examples are very different in format from the PPT slides and demos, and shouldn't be used as a starting point for the group work. The `encrypt` and `decrypt` classes are currently 1:1 with the demos. For details on AI Usage and how it performed, see the [Notes on AI as an Instructional Tool](#notes-on-ai-as-an-instructional-tool)
 
 *VSCode is the 'default' IDE to match the Python virtual environment tutorial that is shared between the tutorial units. Other IDEs and setups can be used if you have a preferred setup. 
@@ -150,7 +153,7 @@ The grid ciphers in this section have some relation to the substitution and tran
 
 
 1. RC4 (Rivest Cipher 4)
-    * RC4 is a once-popular stream cipher designed in 1987. It has since fallen into disuse due to discovered vulnerabilities. Attacks against this cipher include the 2001 [Fluhrer-Mantin-Shamir attack](https://en.wikipedia.org/wiki/Fluhrer,_Mantin_and_Shamir_attack) and attacks against biases in the keystream.
+    * RC4 is a once-popular stream cipher designed in 1987. It has since fallen into disuse due to discovered vulnerabilities. Attacks against this cipher include the 2001 [Fluhrer-Mantin-Shamir attack](https://en.wikipedia.org/wiki/Fluhrer,_Mantin_and_Shamir_attack) and attacks against biases in the keystream, and the 2005 attack by [Andreas Klein](https://en.wikipedia.org/wiki/RC4), which builds upon previous attacks. Later attacks are not examined here. 
 
 2. ChaCha20 
     * ChaCha20 generates a pseudo-random keystream which is then XOR'ed with the plaintext to encrypt it. This method requires a key and a nonce. This cipher originated in 2008 as a family of ciphers.
@@ -158,9 +161,7 @@ The grid ciphers in this section have some relation to the substitution and tran
     * Nonce: an 8-byte, 12-byte, or 24-byte number used only **once** with any given key. ChaCha20 typically uses 12 bytes/96 bits.
 
 `NOTE about the included stream ciphers:`
-* These ciphers are not 'solved' or 'decrypted' in this repo. Brute force decryption is non-trivial (read: impossible in the context of the presented cipher sample) and included with an analysis of what these ciphers are and how they are used. These are for comparison purposes.
-
-
+* Decryption on a stream cipher is non-trivial, so the included `decrypt.py` for each example uses a small selection of common attacks (e.g., dictionary attacks, frequency analysis, true 'try all combinations' brute force) that are discussed in terms of analysis. In some cases where the cipher algorithm has been completely broken, an example of that attack may be implemented. There are no 'test' attacks on algorithms included in this repository.
 
 
 ## Some Algorithm Discussion
@@ -168,12 +169,21 @@ The grid ciphers in this section have some relation to the substitution and tran
 This section discusses the general operation of the algorithms in terms of the input, output, and some tuning. In-depth discussion is reserved for the PPTs and group assignments.
 
 
+ Accuracy could be improved for all of these algorithms by implementing a dictionary or spellcheck program to identify actual English. This would slow automated detection drastically, however. It is also beyond the scope of this introduction.
+
+
 ### Substitution
 
 
 1. **Ceasar Cipher**
 
-This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Ceasar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency. 
+This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Ceasar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
 
 Encryption:
 ```python
@@ -245,6 +255,13 @@ Most likely decryption: 'WOUS ThiS iS a TeXS meSSage'
 2. **Bacon Cipher**
 
 The Bacon Cipher is another relatively straightforward cipher to brute force. It has a limited dictionary and can still be broken with frequency analysis. Each single character is replaced with a binary representation (with ‘1’ and ‘0’ replaced with any arbitrary 2 symbols), and the text is not scrambled. 
+
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
 
 Encryption:
 ```python
@@ -361,6 +378,13 @@ Top 3 most likely decryptions:
 The Monoalphabetic cipher is the most difficult substitution example in this collection and requires some tuning. However, even when it does not perform perfectly, it often results in a starting point for further analysis. For example, a high-scoring but incorrect result is still partially readable. What’s happening is that the text is English-like statistically with the frequency of letter distribution, even if it is very distinctly not English. To improve the decryption, context dependent words can be added to the dictionary.
 
 
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+* `decrypt_improved_test.py` - an LLM generated test case for decryption
+* `decrypt_improved.py` -  The original `decrypt.py` class for this cipher uses a 'hill climbing' approach, which only accepts new solutions that are BETTER than the previous answer. This can cause the algorithm to get stuck in a local optimum since it cannot 'backtrack'. This algorithm allows for backtracking. There is a noticeable improvement in general decryption accuracy, but it is less accurate than adding context-specific words to the dictionary (see the decryption results with ['CRYPTOGRAPHY','SUBSTITUTION','CIPHER','METHOD','ENCRYPT'] added to the dictionary). These results are not surprising. A more intelligent algorithm may be able to more accurately predict the text without dictionary additions.
+
 Encryption:
 ```python
 
@@ -458,6 +482,12 @@ Key sample: Z->A, R->I, M->N, G->T, S->H, V->E, I->R, H->U, L->O, K->P...
 1. Rail Fence
 
 The Rail Fence cipher can be brute forced by working backwards from the length of the message to the number of rails. One difficulty here is that the letter frequency is preserved due to the words being scrambled. An exhaustive search is possible, given that the maximum number of rails in a text of length N is N rails. However, pattern analysis will likely yield results quicker.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
 
 
 Encryption:
@@ -569,6 +599,14 @@ Rail 4:     O
 
 Classical ciphers have search space of  26! ≈ 4×10²⁶, but this type of cipher has a search space on the scale of 2¹²⁸ ≈ 3×10³⁸ (AES-128), making it impossible to attempt an exhaustive search on your average computer. Instead, more intelligent attacks must be utilized to get the key for decryption. The decryption files included for this example only provide an analysis of a sample of search results based on user settings. This algorithm is a good comparison, however, because it is the backbone of modern-day encryption.
 
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+* `decrypt_improved_test.py` - an LLM generated test case for decryption
+* `decrypt_improved.py` -  The 'improved' version of this algorithm was created by letting Claude AI make changes in order to make the decryption algorithm more accurate. It added a very specific dictionary so that the test cases passed more often. There are several group questions comparing & contrasting results and methods. Otherwise, the decryption typically fails.
+
+
 Encryption:
 ```python
 ================================================================================
@@ -654,6 +692,12 @@ Found 0 candidate keys
 1. Polybius
 
 The Polybius cipher is possible to brute force due to its size (5x5 or 6x6), making an exhaustive search possible. While the Polybius Square can be randomized, there are still a limited number of cells. Frequency analysis can also be used to decode this cypher without reconstructing the original grid. This makes the decryption methods similar to the Monoalphabetic cipher shown earlier.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
 
 
 Encryption:
@@ -795,6 +839,11 @@ Match: True
 2. ADFGVX
 
 The use of a 2-step substitution and transposition (or the reverse, depending on if you're encrypting or decrypting) makes this trickier to decode than the Polybius Cipher even though they may take up the same physical size for the grid. However, this algorithm is still possible to brute force through an exhaustive search or frequency analysis. 
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
 
 
 Encryption:
@@ -947,7 +996,15 @@ Demo result: 'HELLO'
 
 1. RC4 
 
-TEXT HERE
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+* `key_comparison_demo.py` - a demonstration of how dictionaries with partial keys in a brute force attack might preform
+* `klein_demo.py` - a demo of the Klein attack for real decryption of RC4
+
+The decryption attempts below using `key_comparison_demo.py` shows that during the brute force attempt with the 18 keys, it is possible to decrypt a message from this algorithm by running down the list in the dictionary. Notice that keys using repeating dictionary words are able to be decrypted, but deviations from the dictionary mean that the message may not (and probably not) be decrypted.
+
 
 Encryption:
 ```python
@@ -960,7 +1017,6 @@ RC4 State Information:
 'RC4' → CE2D58
 'HELLO WORLD' → D42B203340007487B02AF8
 
-
 RC4 State Information:
   Key: 'ThisIsALongerSecretKey123'
 
@@ -971,12 +1027,367 @@ RC4 State Information:
 
 ```
 
+Cipher symmetry demo (not decryption):
 
-Decryption:
 ```python
+============================================================
+RC4 SYMMETRY DEMONSTRATION
+============================================================
+=== RC4 SYMMETRY DEMONSTRATION ===
+Plaintext: 'SECRET'
+Key: 'KEY'
 
+--- Step 1: Encryption ---
+=== RC4 Key Scheduling Algorithm (KSA) for Decryption ===
+Key: 'KEY' = 4B4559
+Key length: 3 bytes
+Initial S-box: [0, 1, 2, ..., 255]
+i=  0: j=(0+0+75)%256= 75, swap S[0]↔S[75]
+i=  1: j=(76+1+69)%256=145, swap S[1]↔S[145]
+i=  2: j=(147+2+89)%256=236, swap S[2]↔S[236]
+i=  3: j=(-17+3+75)%256= 58, swap S[3]↔S[58]
+i=  4: j=(62+4+69)%256=131, swap S[4]↔S[131]
+i=  5: j=(136+5+89)%256=225, swap S[5]↔S[225]
+i=  6: j=(-25+6+75)%256= 50, swap S[6]↔S[50]
+i=  7: j=(57+7+69)%256=126, swap S[7]↔S[126]
+Final S-box first 16 values: [28, 170, 236, 58, 131, 225, 50, 126, 223, 214, 96, 52, 61, 143, 246, 32]
+Final S-box last 16 values:  [173, 55, 99, 75, 196, 124, 102, 82, 91, 135, 87, 149, 23, 212, 114, 108]
+
+=== RC4 Pseudo-Random Generation Algorithm (PRGA) for Decryption ===
+Generating 6 keystream bytes...
+Step | i   | j   | S[i] | S[j] | S[i]+S[j] | S[sum] | Keystream
+-----------------------------------------------------------------
+   0 |   1 | 170 |  81  | 170  |      251 | 149    | 0x95
+   1 |   2 | 150 |  30  | 236  |       10 |  96    | 0x60
+   2 |   3 | 208 |  60  |  58  |      118 | 252    | 0xFC
+   3 |   4 |  83 |  31  | 131  |      162 |  84    | 0x54
+   4 |   5 |  52 | 230  | 225  |      199 | 182    | 0xB6
+   5 |   6 | 102 | 219  |  50  |       13 | 143    | 0x8F
+Ciphertext: C625BF06F3DB
+
+--- Step 2: Decryption ---
+=== RC4 Key Scheduling Algorithm (KSA) for Decryption ===
+Key: 'KEY' = 4B4559
+Key length: 3 bytes
+Initial S-box: [0, 1, 2, ..., 255]
+i=  0: j=(0+0+75)%256= 75, swap S[0]↔S[75]
+i=  1: j=(76+1+69)%256=145, swap S[1]↔S[145]
+i=  2: j=(147+2+89)%256=236, swap S[2]↔S[236]
+i=  3: j=(-17+3+75)%256= 58, swap S[3]↔S[58]
+i=  4: j=(62+4+69)%256=131, swap S[4]↔S[131]
+i=  5: j=(136+5+89)%256=225, swap S[5]↔S[225]
+i=  6: j=(-25+6+75)%256= 50, swap S[6]↔S[50]
+i=  7: j=(57+7+69)%256=126, swap S[7]↔S[126]
+Final S-box first 16 values: [28, 170, 236, 58, 131, 225, 50, 126, 223, 214, 96, 52, 61, 143, 246, 32]
+Final S-box last 16 values:  [173, 55, 99, 75, 196, 124, 102, 82, 91, 135, 87, 149, 23, 212, 114, 108]
+
+=== RC4 Pseudo-Random Generation Algorithm (PRGA) for Decryption ===
+Generating 6 keystream bytes...
+Step | i   | j   | S[i] | S[j] | S[i]+S[j] | S[sum] | Keystream
+-----------------------------------------------------------------
+   0 |   1 | 170 |  81  | 170  |      251 | 149    | 0x95
+   1 |   2 | 150 |  30  | 236  |       10 |  96    | 0x60
+   2 |   3 | 208 |  60  |  58  |      118 | 252    | 0xFC
+   3 |   4 |  83 |  31  | 131  |      162 |  84    | 0x54
+   4 |   5 |  52 | 230  | 225  |      199 | 182    | 0xB6
+   5 |   6 | 102 | 219  |  50  |       13 | 143    | 0x8F
+Decrypted: 'SECRET'
+
+--- Verification ---
+Keystream 1: 9560FC54B68F
+Keystream 2: 9560FC54B68F
+Keystreams identical: True
+Decryption successful: True # NOT REAL DECRYPTION!! This re-used a function call to compare the two, but they SHOULD match because this algorithm is symmetric
 
 ```
+
+
+Decryption with `key_comparison_demo.py`:
+```python
+STEP 1: ENCRYPTING MESSAGES
+==================================================
+1. 'HELLO' + key 'KEY' → DD25B018F9
+2. 'SECRET' + key 'ABC' → 9D611DC10AFA
+3. 'TEST' + key '123' → 07B5ECD6
+4. 'RC4' + key 'X' → B7C3C5
+5. 'BRUTE' + key 'PASS' → C2D2A9DEB6
+6. 'TESTTESTTESTTESTTESTTEST' + key 'PEANUTBUTTER' → B901B1D905B94619715026232C779904EE2A80F5B99DFDAA
+7. 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' + key 'QUICKBROWNFOX' → 4D2F0712D8C84303DF0E8AEEFA73ACC5CEFBE9CA9CE3B9EACF309A80674C65E984DE5730BC6BA6F7636FA6548. 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' + key 'FOXFOXFOXFOX' → 7447591A0418A1EA1FABAAAC2FE8B73423BCA23F6FD72419ABB46A9FBF396B2CC7C72983CDFE31D35A5BF81B 
+9. 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' + key 'F' → C11C78918F720AA0A34130F8A8894E81EA0C2A3EAD9A7F2F8504E094617CB50D3D7A1698606D38BDB2C8EB65
+10. 'THIS is a LONGER PHRASE with mixed letters' + key 'KEYKEYKEYKEYKEY' → C128B50796E637D857A4B7C9BE18967F566530651DE0D0008151C5E0C2AAB12207559CB8F9F93AF3275B   
+11. 'THIS is a LONGER PHRASE with mixed letters' + key 'AMOREDIFFICULTKEY' → F01C043F1FE9CC68EAEA4C50DECBE16AA85C79D44C0DC1A93EF1CA16AFAE863D820D6036690A532CD666 
+
+STEP 2: BRUTE FORCE DECRYPTION ATTEMPTS
+==================================================
+
+1. Brute forcing: DD25B018F9
+   (Original: 'HELLO' with key 'KEY')
+SUCCESS! Key 'KEY' → 'HELLO' (attempt 7)
+
+2. Brute forcing: 9D611DC10AFA
+   (Original: 'SECRET' with key 'ABC')
+SUCCESS! Key 'ABC' → 'SECRET' (attempt 8)
+
+3. Brute forcing: 07B5ECD6
+   (Original: 'TEST' with key '123')
+SUCCESS! Key '123' → 'TEST' (attempt 9)
+
+4. Brute forcing: B7C3C5
+   (Original: 'RC4' with key 'X')
+SUCCESS! Key 'X' → 'RC4' (attempt 4)
+
+5. Brute forcing: C2D2A9DEB6
+   (Original: 'BRUTE' with key 'PASS')
+SUCCESS! Key 'PASS' → 'BRUTE' (attempt 10)
+
+6. Brute forcing: B901B1D905B94619715026232C779904EE2A80F5B99DFDAA
+   (Original: 'TESTTESTTESTTESTTESTTEST' with key 'PEANUTBUTTER')
+NO KEY: Key not found in 18 attempts
+
+7. Brute forcing: 4D2F0712D8C84303DF0E8AEEFA73ACC5CEFBE9CA9CE3B9EACF309A80674C65E984DE5730BC6BA6F7636FA654
+   (Original: 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' with key 'QUICKBROWNFOX')
+NO KEY: Key not found in 18 attempts
+
+8. Brute forcing: 7447591A0418A1EA1FABAAAC2FE8B73423BCA23F6FD72419ABB46A9FBF396B2CC7C72983CDFE31D35A5BF81B
+   (Original: 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' with key 'FOXFOXFOXFOX')
+NO KEY: Key not found in 18 attempts
+
+9. Brute forcing: C11C78918F720AA0A34130F8A8894E81EA0C2A3EAD9A7F2F8504E094617CB50D3D7A1698606D38BDB2C8EB65
+   (Original: 'THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG' with key 'F')
+NO KEY: Key not found in 18 attempts
+
+10. Brute forcing: C128B50796E637D857A4B7C9BE18967F566530651DE0D0008151C5E0C2AAB12207559CB8F9F93AF3275B
+   (Original: 'THIS is a LONGER PHRASE with mixed letters' with key 'KEYKEYKEYKEYKEY')
+SUCCESS! Key 'KEY' → 'THIS is a LONGER PHRASE with mixed letters' (attempt 7)
+
+11. Brute forcing: F01C043F1FE9CC68EAEA4C50DECBE16AA85C79D44C0DC1A93EF1CA16AFAE863D820D6036690A532CD666
+   (Original: 'THIS is a LONGER PHRASE with mixed letters' with key 'AMOREDIFFICULTKEY')
+NO KEY: Key not found in 18 attempts
+
+```
+
+
+Decryption (short printout), `klein_demo.py`:
+
+NOTE: everything is compared to the ground truth value of the key byte to make this readable. Pay close attention to the `appears X/Y times`. That is relative to the total samples. 
+
+This algorithm works on VERY SUBTLE differences. Below shows the occurrence of the TARGET value in the location. For the top example, K appeared in position 0 only 391 times out of 100k. That's only 0.391 percent. For very small keys, there really wasn't a statistically noticeable difference. 
+
+```python
+Analyzing keystream position 0:
+    Key[0] = 0x4B ('K') appears 391/100000 times (prob: 0.0039, bias: 1.00x)
+    Key[1] = 0x45 ('E') appears 196/100000 times (prob: 0.0020, bias: 0.50x)
+    Key[2] = 0x59 ('Y') appears 488/100000 times (prob: 0.0049, bias: 1.25x)
+
+Analyzing keystream position 1:
+    Key[0] = 0x4B ('K') appears 195/100000 times (prob: 0.0019, bias: 0.50x)
+
+Analyzing keystream position 2:
+    Key[0] = 0x4B ('K') appears 195/100000 times (prob: 0.0019, bias: 0.50x)
+    Key[1] = 0x45 ('E') appears 194/100000 times (prob: 0.0019, bias: 0.50x)
+    Key[2] = 0x59 ('Y') appears 196/100000 times (prob: 0.0020, bias: 0.50x)
+
+```
+
+However, with longer keys there were some values that began to stand out. That means that this is NOT perfectly random, and that there is **something** that can be pulled out of this algorithm. 450k samples were run, and some threshold values may need to be tuned, but there are several statistically significant values.
+
+The following is run over the first 16 bytes. Kline discovered that there was the strongest correlation in the first 16-32 bytes.
+
+```python
+Analyzing keystream position 0:
+    Key[0] = 0x4C ('L') appears 1760/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[1] = 0x4F ('O') appears 1758/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[2] = 0x4E ('N') appears 1758/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[3] = 0x47 ('G') appears 880/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[4] = 0x50 ('P') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[5] = 0x41 ('A') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[6] = 0x53 ('S') appears 879/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[7] = 0x53 ('S') appears 879/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[8] = 0x57 ('W') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[9] = 0x4F ('O') appears 1758/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[10] = 0x52 ('R') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 39257/450000 times (prob: 0.0872, bias: 22.33x)  # NOTE THIS VALUE!!
+
+Analyzing keystream position 3:
+    Key[0] = 0x4C ('L') appears 1759/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[1] = 0x4F ('O') appears 38819/450000 times (prob: 0.0863, bias: 22.08x)
+    Key[3] = 0x47 ('G') appears 439/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[4] = 0x50 ('P') appears 439/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[6] = 0x53 ('S') appears 2199/450000 times (prob: 0.0049, bias: 1.25x)
+    Key[7] = 0x53 ('S') appears 2199/450000 times (prob: 0.0049, bias: 1.25x)
+    Key[8] = 0x57 ('W') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[9] = 0x4F ('O') appears 38819/450000 times (prob: 0.0863, bias: 22.08x) # AND THIS VALUE!
+    Key[10] = 0x52 ('R') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 1318/450000 times (prob: 0.0029, bias: 0.75x)
+
+Analyzing keystream position 8:
+    Key[1] = 0x4F ('O') appears 1318/450000 times (prob: 0.0029, bias: 0.75x)
+    Key[2] = 0x4E ('N') appears 1317/450000 times (prob: 0.0029, bias: 0.75x)
+    Key[3] = 0x47 ('G') appears 879/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[4] = 0x50 ('P') appears 1317/450000 times (prob: 0.0029, bias: 0.75x)
+    Key[5] = 0x41 ('A') appears 879/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[6] = 0x53 ('S') appears 1756/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[7] = 0x53 ('S') appears 1756/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[8] = 0x57 ('W') appears 57570/450000 times (prob: 0.1279, bias: 32.75x) # LETTER NUMBER 3!
+    Key[9] = 0x4F ('O') appears 1318/450000 times (prob: 0.0029, bias: 0.75x)
+    Key[10] = 0x52 ('R') appears 439/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+
+Analyzing keystream position 15:
+    Key[0] = 0x4C ('L') appears 1317/450000 times (prob: 0.0029, bias: 0.75x)
+    Key[1] = 0x4F ('O') appears 56250/450000 times (prob: 0.1250, bias: 32.00x)  #HERE!
+    Key[2] = 0x4E ('N') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[3] = 0x47 ('G') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[4] = 0x50 ('P') appears 880/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[5] = 0x41 ('A') appears 1756/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[6] = 0x53 ('S') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[7] = 0x53 ('S') appears 440/450000 times (prob: 0.0010, bias: 0.25x)
+    Key[8] = 0x57 ('W') appears 1756/450000 times (prob: 0.0039, bias: 1.00x)
+    Key[9] = 0x4F ('O') appears 56250/450000 times (prob: 0.1250, bias: 32.00x) # AND HERE!
+    Key[10] = 0x52 ('R') appears 879/450000 times (prob: 0.0020, bias: 0.50x)
+    Key[11] = 0x44 ('D') appears 1317/450000 times (prob: 0.0029, bias: 0.75x)
+
+```
+
+Doing a second analysis for the first 32 bytes and increasing the number of samples from 450k to 500k showed:
+
+```python
+Analyzing keystream position 0:
+    Key[0] = 0x4C ('L') appears 1955/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[1] = 0x4F ('O') appears 1952/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[2] = 0x4E ('N') appears 1953/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[3] = 0x47 ('G') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[4] = 0x50 ('P') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[5] = 0x41 ('A') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[6] = 0x53 ('S') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[7] = 0x53 ('S') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[8] = 0x57 ('W') appears 489/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[9] = 0x4F ('O') appears 1952/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[10] = 0x52 ('R') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 43618/500000 times (prob: 0.0872, bias: 22.33x) # 22x HIGHER!
+
+Analyzing keystream position 3:
+    Key[0] = 0x4C ('L') appears 1955/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[1] = 0x4F ('O') appears 43130/500000 times (prob: 0.0863, bias: 22.08x)
+    Key[3] = 0x47 ('G') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[4] = 0x50 ('P') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[6] = 0x53 ('S') appears 2443/500000 times (prob: 0.0049, bias: 1.25x)
+    Key[7] = 0x53 ('S') appears 2443/500000 times (prob: 0.0049, bias: 1.25x)
+    Key[8] = 0x57 ('W') appears 489/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[9] = 0x4F ('O') appears 43130/500000 times (prob: 0.0863, bias: 22.08x) # 22x HIGHER!
+    Key[10] = 0x52 ('R') appears 489/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+
+Analyzing keystream position 8:
+    Key[1] = 0x4F ('O') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[2] = 0x4E ('N') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[3] = 0x47 ('G') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[4] = 0x50 ('P') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[5] = 0x41 ('A') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[6] = 0x53 ('S') appears 1952/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[7] = 0x53 ('S') appears 1952/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[8] = 0x57 ('W') appears 63966/500000 times (prob: 0.1279, bias: 32.75x) # 32x HIGHER!
+    Key[9] = 0x4F ('O') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[10] = 0x52 ('R') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[11] = 0x44 ('D') appears 489/500000 times (prob: 0.0010, bias: 0.25x)
+
+] = 0x4C ('L') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[1] = 0x4F ('O') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[2] = 0x4E ('N') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[3] = 0x47 ('G') appears 3905/500000 times (prob: 0.0078, bias: 2.00x) #<- that would be worth investigating, but is likely too low
+    Key[4] = 0x50 ('P') appears 1953/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[5] = 0x41 ('A') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[6] = 0x53 ('S') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[7] = 0x53 ('S') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[9] = 0x4F ('O') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[11] = 0x44 ('D') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+
+Analyzing keystream position 23:
+    Key[0] = 0x4C ('L') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[2] = 0x4E ('N') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[3] = 0x47 ('G') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[5] = 0x41 ('A') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[6] = 0x53 ('S') appears 1953/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[7] = 0x53 ('S') appears 1953/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[8] = 0x57 ('W') appears 42644/500000 times (prob: 0.0853, bias: 21.83x) # 21x HIGHER!
+    Key[11] = 0x44 ('D') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+
+Analyzing keystream position 24:
+    Key[0] = 0x4C ('L') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[1] = 0x4F ('O') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[2] = 0x4E ('N') appears 1466/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[3] = 0x47 ('G') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[4] = 0x50 ('P') appears 62500/500000 times (prob: 0.1250, bias: 32.00x) #32x HIGHER!
+    Key[5] = 0x41 ('A') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[8] = 0x57 ('W') appears 42643/500000 times (prob: 0.0853, bias: 21.83x) #21x HIGHER!
+    Key[9] = 0x4F ('O') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[10] = 0x52 ('R') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[11] = 0x44 ('D') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+
+Analyzing keystream position 28:
+    Key[0] = 0x4C ('L') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[1] = 0x4F ('O') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[2] = 0x4E ('N') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[3] = 0x47 ('G') appears 1467/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[5] = 0x41 ('A') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[6] = 0x53 ('S') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[7] = 0x53 ('S') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[8] = 0x57 ('W') appears 42643/500000 times (prob: 0.0853, bias: 21.83x) #21x HIGHER!
+    Key[9] = 0x4F ('O') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[10] = 0x52 ('R') appears 1954/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[11] = 0x44 ('D') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+
+Analyzing keystream position 30:
+    Key[0] = 0x4C ('L') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[1] = 0x4F ('O') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[3] = 0x47 ('G') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[4] = 0x50 ('P') appears 1954/500000 times (prob: 0.0039, bias: 1.00x)
+    Key[5] = 0x41 ('A') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[6] = 0x53 ('S') appears 42156/500000 times (prob: 0.0843, bias: 21.58x) #21x HIGHER!
+    Key[7] = 0x53 ('S') appears 42156/500000 times (prob: 0.0843, bias: 21.58x) #21x HIGHER!
+    Key[8] = 0x57 ('W') appears 976/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[9] = 0x4F ('O') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[10] = 0x52 ('R') appears 2930/500000 times (prob: 0.0059, bias: 1.50x)
+    Key[11] = 0x44 ('D') appears 2928/500000 times (prob: 0.0059, bias: 1.50x)
+
+Analyzing keystream position 31:
+    Key[0] = 0x4C ('L') appears 1465/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[1] = 0x4F ('O') appears 978/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[2] = 0x4E ('N') appears 4393/500000 times (prob: 0.0088, bias: 2.25x) <- that is worth looking at a little closer, but too low individually
+    Key[3] = 0x47 ('G') appears 1464/500000 times (prob: 0.0029, bias: 0.75x)
+    Key[4] = 0x50 ('P') appears 488/500000 times (prob: 0.0010, bias: 0.25x)
+    Key[8] = 0x57 ('W') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[9] = 0x4F ('O') appears 978/500000 times (prob: 0.0020, bias: 0.50x)
+    Key[10] = 0x52 ('R') appears 2441/500000 times (prob: 0.0049, bias: 1.25x)
+    Key[11] = 0x44 ('D') appears 977/500000 times (prob: 0.0020, bias: 0.50x)
+
+```
+
+So we start feeling pretty good about the following parts of the key:
+
+* Key[1] = 0x4F ('O') appears 62500/500000 times (prob: 0.1250, bias: 32.00x) # 32x HIGHER!
+* Key[4] = 0x50 ('P') appears 62500/500000 times (prob: 0.1250, bias: 32.00x) #32x HIGHER!    
+* Key[6] = 0x53 ('S') appears 42156/500000 times (prob: 0.0843, bias: 21.58x) #21x HIGHER!
+* Key[7] = 0x53 ('S') appears 42156/500000 times (prob: 0.0843, bias: 21.58x) #21x HIGHER!
+* Key[8] = 0x57 ('W') appears 63966/500000 times (prob: 0.1279, bias: 32.75x) # 32x HIGHER!, 21x HIGHER!, 21x HIGHER!, 21x HIGHER! (this many? This is W.)
+* Key[9] = 0x4F ('O') appears 43130/500000 times (prob: 0.0863, bias: 22.08x) # 22x HIGHER!,  32x HIGHER!
+* Key[11] = 0x44 ('D') appears 43618/500000 times (prob: 0.0872, bias: 22.33x) # 22x HIGHER!
+
+KEY PROGRESS: ?O??P?SSWO?D
+
+And we've got some suspiciouns of two positions:
+* Key[2] = 0x4E ('N') appears 4393/500000 times (prob: 0.0088, bias: 2.25x) <- that is worth looking at a little closer, but too low individually
+* Key[3] = 0x47 ('G') appears 3905/500000 times (prob: 0.0078, bias: 2.00x) #<- that would be worth investigating, but is likely too low
+
+
+But that doesn't mean we've found our key! We're working from an inherently biased point of view because the `klein_demo.py` compares the results to the ground truth (our secret key). In a real situation, we would look at the statistical significance over that 16-32 bits (or longer), and use that to choose characters with the highest probability. Those instances where 'O' is in position 9 43130 times out of 500000 (8.63%)? That is statistically highly significant, even if it doesn't happen every time. Those letters would be likely to be part of the key.
+
+The situations where 'N' is in position 2 and 'G' is in position 3? Those may not be statistically significant at all. Mathematically, you would analyze what characters might be more significant and collect a few of those to try. Because if you have as much data as it takes to run a Klein attack, then you have enough data to test out a few keys and see if you've decrypted it.
+
+However, also consider that if a key is generated by a person rather than a computer it's going to have some patterns. So for something that looks like "?O??P?SSWO?D", where the last part looks a lot like "PASSWORD"? You may be able to look at the key and guess.
+
+
+
 
 
 2. ChaCha20
