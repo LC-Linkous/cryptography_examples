@@ -1,4 +1,4 @@
-# encryption_examples
+# cryptography_examples
 
 This repo is a sample of some basic encryption methods, and some references for further reading. It is the public half of an interactive unit on encryption being developed for an undergraduate elective course. The full unit includes PPT slides, other VSCode examples*, and several group assignments. 
 
