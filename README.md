@@ -1499,7 +1499,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
 2. From a content perspective:
     * Generating the test cases for encryption and decryption was overall a positive experience. The test cases are unique enough from my demonstrations that they can be released publicly and still demonstrate the encryption and decryption process. They also included display and analysis that I was not expecting.
     * The commentary, when in the test files, was overall interesting and did explain individual algorithm steps fairly well
-    * Some of the code generation just for algorithm explanation and preview. This was useful for demonstration in this use case.
+    * Some of the code generation was just for algorithm explanation and previewing internal steps/process. This was useful for demonstration in this use case, but would be excessive in normal use.
 
 
 3. Debug and preview
@@ -1521,7 +1521,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
 3. AI Generated Commentary
     * (disclaimer: no attempt was made to instruct otherwise)
     * Claude inserted a lot of commentary into the test cases for encryption and decryption, some of which was off topic.
-    * When fed multiple algorithms in the same chat, it would begin to compare them unprompted. This was not a bad thing, but discussion was intended to be reserved for outside the encryption and decryption process. When Claude was allowed to make modifications (See `transposition/block/decrypt_improved_test.py`), it inserted a lot of commentary and tended to make modifications
+    * When fed multiple algorithms in the same chat, it would begin to compare them unprompted. This was not a bad thing, but discussion was intended to be reserved for outside the encryption and decryption process. When Claude was allowed to make modifications (See `transposition/block/decrypt_improved_test.py`), it inserted a lot of commentary and tended to make modifications that did not apply to the current problem/topic, or code was modified to allow test cases to pass. 
 
 
 
