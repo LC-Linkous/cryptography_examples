@@ -36,7 +36,7 @@ Claude AI was used to generate the test cases for the **public** version of this
 * [Notes on AI as an Instructional Tool](#notes-on-ai-as-an-instructional-tool)
     * [Tool Disclosure ](#tool-disclosure)
     * [Goal for Using AI](#goal-for-using-ai)
-    * [Incorporation and Testing](#incorporation -and-testing)
+    * [Incorporation and Testing](#incorporation-and-testing)
     * [What Worked](#what-worked)
     * [What Did Not Work](#what-did-not-work)
 * [References](#references)
