@@ -26,13 +26,19 @@ Claude AI was used to generate the test cases for the **public** version of this
 * [Included in this Project](#included-in-this-project)
     * [Substitution Ciphers](#substitution-ciphers)
     * [Transposition Ciphers](#transposition-ciphers)
+    * [Block Ciphers](#block-ciphers)
     * [Grid Ciphers](#grid-ciphers)
     * [Stream Ciphers](#stream-ciphers)
+    * [Asymmetric (Public-Key) Ciphers](#asymmetric-public-key-ciphers)
+    * [Hashing](#hashing)
 * [Some Algorithm Discussion](#some-algorithm-discussion)
     * [Substitution](#substitution)
     * [Transposition](#transposition)
+    * [Block](#block)
     * [Grid](#grid)
     * [Stream and Hash](#stream-and-hash)
+    * [Asymmetric (Public-Key)](#asymmetric-public-key)
+    * [Hashing (SHA-256)](#hashing-sha-256)
 * [Notes on AI as an Instructional Tool](#notes-on-ai-as-an-instructional-tool)
     * [Tool Disclosure ](#tool-disclosure)
     * [Goal for Using AI](#goal-for-using-ai)
@@ -53,7 +59,7 @@ Claude AI was used to generate the test cases for the **public** version of this
 
 Encryption is a method of making transmitted information unreadable to anyone who is not the intended sender or recipient(s). These transmissions can be text, images, raw data, or any kind of information that can be digitized and sent between at least two points. 
 
-Algorithms for obfuscating text have been around for thousands of years. The 'Ceasar Cipher', where a message is encrypted with a shifted dictionary, is one of the most well-known early examples of a substitution cipher. Physical methods, such as using a scytale wrapped with pieces of parchment or leather to encode and decode messages in a transposition cipher have also existed for at least as long as substitution ciphers. There also exists entire secret languages that have been used in both spoken and written forms to communicate. (It turns out people have always been clever about sending secret messages!)
+Algorithms for obfuscating text have been around for thousands of years. The 'Caesar Cipher', where a message is encrypted with a shifted dictionary, is one of the most well-known early examples of a substitution cipher. Physical methods, such as using a scytale wrapped with pieces of parchment or leather to encode and decode messages in a transposition cipher have also existed for at least as long as substitution ciphers. There also exists entire secret languages that have been used in both spoken and written forms to communicate. (It turns out people have always been clever about sending secret messages!)
 
 Why all the effort? When using complex algorithms, encryption ensures that even if the data is intercepted, it remains secure. This makes it essential for maintaining privacy and security in communications, including across the internet in the modern day. 
 
@@ -61,7 +67,7 @@ In the figure above, `Hello World!` is encrypted with a public key, and then sen
 
 This image, while simple, is a good introduction for several complex topics:
 
-* `Public key cryptography`, also called `asymmetric cryptography`, uses a pair of keys in order to encode and decode messages. This is what is depicted in the image above. When the cryptographic algorithm is created, two keys are generated. One of these keys is the `public key` while the other is the `private key`.  The public key is known by anyone and everyone, and can be used to `verify` the message sender (the owner of the public key). The private key is known **only** by the intended message recipients, and is used to decode the message. There are several methods of combining public and private key usage in order to securely encrypt and decrypt messages. See the [References](#references) for further reading.
+* `Public key cryptography`, also called `asymmetric cryptography`, uses a pair of keys in order to encode and decode messages. This is what is depicted in the image above. When the cryptographic algorithm is created, two keys are generated. One of these keys is the `public key` while the other is the `private key`.  The public key is known by anyone and everyone. To send a private message, the sender encrypts it with the recipient's public key, and only the recipient's `private key` can decode it. The same key pair can also be used in the other direction for `digital signatures`: the owner signs with their private key, and anyone can use the matching public key to `verify` that the message really came from that owner. (Encryption keeps a message secret; signing proves who sent it. They are related but distinct uses.) The private key is known **only** by its owner. There are several methods of combining public and private key usage in order to securely encrypt and decrypt messages. See the [References](#references) for further reading.
 
 * With the existence of `asymmetric cryptography`, it makes sense that there is also `symmetric cryptography`. Symmetric key algorithms are algorithms that use the same key for encryption and decryption. This is the oldest and the most straightforward type of encryption. The keys can be identical, or they may have a simple reversal in order to 'undo' the encryption. This key should be thought of as a `private key`, and should only be shared between the sender and intended recipients. Having the private, shared, key is considered validation for this method. This method is less secure, but noticeably faster for encryption and transmission, which makes it appealing. 
 
@@ -70,7 +76,7 @@ This image, while simple, is a good introduction for several complex topics:
 * `Hashing`, or hash functions, is another topic that may come up, and is a form of encryption that is intended to go in `one direction`, unlike symmetric and asymmetric methods, which are `bidirectional`. Hashing is intended for verification, not decryption. For example, passwords submitted on a banking app may be stored in a database as a generated hash value rather than storing a password directly. When a user logs in to the app, the entered password is converted to a hash and then compared to the hash value in the database. The raw text of the password is not sent. This method is outside the scope of this introduction, but may appear in some demos.
 
 
-The `Hello World!` text in the figure in this section was created using the included Ceasar Cipher, making the text actually from a symmetric encryption method as the `private key` is a simple reversal of the `public key`. 
+The `Hello World!` text in the figure in this section was created using the included Caesar Cipher, making the text actually from a symmetric encryption method as the `private key` is a simple reversal of the `public key`. 
 
 
 ## Requirements
@@ -114,13 +120,16 @@ Discussion of ciphers and history are included in the non-public half of this ma
 
 In a substitution cipher, each letter (or symbol) in the plaintext is replaced by a corresponding letter (or symbol) in the ciphertext. The simplest of these are vulnerable to decryption even without having a private key due to frequency analysis. Some methods exist to make frequency analysis less effective.
 
-1. Ceasar Cipher
-    * This cipher is attributed to Julius Ceasar, and involves and alphabetical shift. The cipher is created by taking the plaintext and shifting it by a certain number of positions down or up the alphabet. It is one of the most common 'starting' ciphers used to introduce the topic of cryptography.
+1. Caesar Cipher
+    * `Era: classical (~50 BCE) · Type: monoalphabetic substitution · Broken by: brute force / frequency analysis · Status: insecure, teaching only`
+    * This cipher is attributed to Julius Caesar, and involves an alphabetical shift. The cipher is created by taking the plaintext and shifting it by a certain number of positions down or up the alphabet. It is one of the most common 'starting' ciphers used to introduce the topic of cryptography.
 2. Bacon Cipher
+    * `Era: 1605 · Type: steganographic binary encoding · Broken by: recognizing the 5-symbol grouping · Status: insecure, teaching only`
     * Created by Francis Bacon in 1605, this is a type of steganography rather than just a cipher. Using this method, letters are encoded rather than the message. This method works like binary representation, where two characters (typically 'A' and 'B') are used in a series of 5 to represent a numerical value of a letter. 
 3. Monoalphabetic Cipher
+    * `Era: classical/medieval · Type: substitution (arbitrary 1:1 map) · Broken by: frequency analysis · Status: insecure, teaching only`
     * This cipher creates a new dictionary with the same 1:1 relation as a Caesar Cipher, but the letters in the cipher dictionary can be randomly matched to their plaintext equivalent rather than determined by shifting.
-    * This is the most difficult of the substitution ciphers in this section to brute force, and requires some tuning. HOWEVER, even when it does not preform perfectly, it often results in a starting point for further analysis. For example, a high-scoring but incorrect result is still partialy readable.
+    * This is the most difficult of the substitution ciphers in this section to brute force, and requires some tuning. HOWEVER, even when it does not perform perfectly, it often results in a starting point for further analysis. For example, a high-scoring but incorrect result is still partially readable.
 
 
 ### Transposition Ciphers
@@ -128,10 +137,17 @@ In a substitution cipher, each letter (or symbol) in the plaintext is replaced b
 A transposition cipher uses the message itself as a form of obfuscation. Rather than changing the letters (substituting), the letters in the message are rearranged to make the message unreadable. 
 
 1. Rail Fence
+    * `Era: classical · Type: geometric transposition · Broken by: reconstructing the rail pattern (exhaustive over rail count) · Status: insecure, teaching only`
     * This cipher is named for its distinctive 'zig zag' pattern where the plaintext is written up and down columns ('rails') and then read across the rows to create the cipher text. This can be brute forced by reconstructing the zigzag pattern.
-2. Block
-    * A block cipher ia s symmetric algorithm that encrypt data in 'blocks' rather than one at a time (as in a stream cipher). This algorithm is a foundational model used in the DES algorithm.
-    * The 'block' cipher in this example is a Feistel cipher (also known as Luby–Rackoff block cipher). It was named after Horst Feistel, who was a physicist and cryptographer working at IBM.
+
+
+### Block Ciphers
+
+A block cipher is a symmetric algorithm that encrypts fixed-size *blocks* of data at once, rather than one symbol at a time (as in a stream cipher). It is neither pure substitution nor pure transposition: it repeatedly **combines both** over multiple rounds, which is why it sits in its own category. This is the structural hinge between the classical hand ciphers above and modern computer-era cryptography below — the direct ancestor of DES and, through it, the lineage that leads to AES.
+
+1. Feistel (Block)
+    * `Era: 1970s (IBM) · Type: product cipher (Feistel network) · Broken by: not by brute force at real key sizes; cryptanalysis only · Status: foundational structure; DES itself now retired`
+    * The 'block' cipher in this example is a Feistel cipher (also known as the Luby–Rackoff block cipher). It is named after Horst Feistel, a physicist and cryptographer at IBM, and it is the foundational model used in the DES algorithm. The elegant property of a Feistel network is that encryption and decryption use the *same* structure — only the round-key order reverses.
 
 
 ### Grid Ciphers
@@ -140,10 +156,12 @@ The grid ciphers in this section have some relation to the substitution and tran
 
 
 1. Polybius
+    * `Era: ~150 BCE · Type: substitution (coordinate encoding) · Broken by: exhaustive search / frequency analysis · Status: insecure, teaching only`
     * A Polybius cipher uses a 5x5 grid in order to encode letters into numerical coordinates of a grid. This is a type of `substitution` cipher.
-    * Attributed to the Green historian Polybius.
+    * Attributed to the Greek historian Polybius.
 
 2. ADFGVX
+    * `Era: 1918 (WW1) · Type: fractionating substitution + transposition · Broken by: exhaustive search / frequency analysis (famously by Painvin) · Status: insecure, teaching only`
     * This is a WW1 cipher used to send encrypted messages over radiotelegraphy/wireless telemetry. It is a revised version of the earlier ADFGV cipher and uses a modified Polybius square (6x6 compared to the 5x5). 
     * This is a `transposition` cipher but is in this section due to the grid used in the algorithm. This grid form made it possible to implement manually. 
 
@@ -153,15 +171,42 @@ The grid ciphers in this section have some relation to the substitution and tran
 
 
 1. RC4
+    * `Era: 1987 · Type: stream cipher · Broken by: keystream biases (Fluhrer–Mantin–Shamir, Klein) · Status: broken, deprecated`
     * RC4 is a once-popular stream cipher designed in 1987. It has since fallen into disuse due to discovered vulnerabilities. Attacks against this cipher include the 2001 [Fluhrer-Mantin-Shamir attack](https://en.wikipedia.org/wiki/Fluhrer,_Mantin_and_Shamir_attack) and attacks against biases in the keystream, and the 2005 attack by [Andreas Klein](https://en.wikipedia.org/wiki/RC4), which builds upon previous attacks. Later attacks are not examined here. 
 
 2. ChaCha20 
-    * ChaCha20 generates a pseudo-random keystream which is then XOR'ed with the plaintext to encrypt it. This method requires a key and a nonce. This cipher originated in 2008 as a family of ciphers.
+    * `Era: 2008 · Type: stream cipher (ARX) · Broken by: no practical break known · Status: secure, in wide modern use`
+    * ChaCha20 generates a pseudo-random keystream which is then XOR'ed with the plaintext to encrypt it. This method requires a key and a nonce. ChaCha20 is the 20-round member of the ChaCha family, introduced by Daniel J. Bernstein in 2008 as a refinement of his earlier Salsa20 (2005).
     * Key: a secret value, typically 32 byte/256 bits, used to initialize a cipher's state
     * Nonce: an 8-byte, 12-byte, or 24-byte number used only **once** with any given key. ChaCha20 typically uses 12 bytes/96 bits.
 
 `NOTE about the included stream ciphers:`
 * Decryption on a stream cipher is non-trivial, so the included `decrypt.py` for each example uses a small selection of common attacks (e.g., dictionary attacks, frequency analysis, true 'try all combinations' brute force) that are discussed in terms of analysis. In some cases where the cipher algorithm has been completely broken, an example of that attack may be implemented. There are no 'test' attacks on algorithms included in this repository.
+
+
+### Asymmetric (Public-Key) Ciphers
+
+Every cipher above is **symmetric**: the same secret is used to encrypt and decrypt, and the two parties must somehow share that secret in advance. Asymmetric (public-key) cryptography removes that requirement entirely. Each party has a *pair* of keys — a public one anyone may hold and a private one kept secret — and the security rests not on a hidden algorithm but on a **mathematical problem that is easy in one direction and infeasible in reverse**. These two examples are the classical pillars of that idea.
+
+1. RSA
+    * `Era: 1977 · Type: public-key encryption · Hard problem: integer factorization · Status: secure at large key sizes (>= 2048-bit n)`
+    * Encryption is `c = m^e mod n` with the public key; decryption is `m = c^d mod n` with the private key. An eavesdropper who has the public key `(e, n)` and the ciphertext can only recover the private key by **factoring `n`** back into its two prime factors. The `decrypt.py` attack does exactly that by trial division, and `decrypt_improved.py` contrasts naive factoring with smarter methods (Fermat, Pollard's rho) — watch the effort scale with key size.
+    * **Teaching note:** the implementation here is *textbook RSA* (no padding, small primes, deterministic). It is correct for showing how RSA works and why factoring matters, but it is intentionally insecure — a deliberate lesson that "the math being right" is not the same as "the system being secure."
+
+2. ECDH (Elliptic-Curve Diffie–Hellman)
+    * `Era: DH 1976 / EC variant mid-1980s · Type: public-key *key exchange* · Hard problem: elliptic-curve discrete logarithm · Status: secure at real curve sizes (~256-bit)`
+    * ECDH is not a message cipher; it is a **key exchange**. Two parties each pick a private scalar, derive a public point on a shared elliptic curve, swap public points, and independently arrive at the *same* shared secret — which never crosses the wire. Breaking it means solving the elliptic-curve discrete log (recovering the private scalar from a public point). The `decrypt.py` attack does this naively; `decrypt_improved.py` uses Baby-Step Giant-Step for the `~sqrt(order)` speedup.
+    * RSA and ECDH make a clean pair: RSA's security is "factoring is hard," ECDH's is "discrete log is hard." They are the two foundations classical public-key cryptography is built on.
+
+
+### Hashing
+
+A cryptographic hash is the odd one out: it is **not encryption at all**. There is no key and no decryption — a hash is a *one-way* function that maps any input to a fixed-size fingerprint (digest). The README's introduction described this as the "one-directional" method used for verification (e.g. storing a password's hash rather than the password); this is the worked example of that idea.
+
+1. SHA-256
+    * `Era: 2001 (NSA / NIST, SHA-2 family) · Type: cryptographic hash · Resists: preimage (~2^256) and collision (~2^128, birthday bound) attacks · Status: secure, in wide modern use`
+    * SHA-256 pads a message, splits it into 512-bit blocks, and runs each through a 64-round compression function to produce a 256-bit digest. The implementation here is built from scratch and **verified bit-for-bit against the published NIST test vectors** in `hash_test.py`.
+    * Because there is nothing to decrypt, the companion file is `analysis.py` rather than a `decrypt.py`. It is a **resist-don't-break demonstration**: rather than recovering an input, it shows the *properties* that make the hash useful — the avalanche effect (a one-bit input change flips ~half the output bits) and the brute-force cost that makes reversal infeasible. (This mirrors the ChaCha20 `alg_analysis.py` approach: the lesson is in watching the function resist, not in breaking it.)
 
 
 ## Some Algorithm Discussion
@@ -175,9 +220,9 @@ This section discusses the general operation of the algorithms in terms of the i
 ### Substitution
 
 
-1. **Ceasar Cipher**
+1. **Caesar Cipher**
 
-This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Ceasar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency.
+This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Caesar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency.
 
 * `encrypt.py` - the encryption class, standardized input.
 * `decrypt.py` - the brute force decryption class, standardized input.
@@ -595,7 +640,9 @@ Rail 4:     O
 
 
 
-2. Block
+### Block
+
+A Feistel block cipher is neither pure substitution nor pure transposition — it repeatedly combines both over several rounds. It is treated as its own category here (rather than under Transposition) because that combined, multi-round *product cipher* structure is precisely what defines it, and it is the bridge from classical hand ciphers to modern computer-era cryptography.
 
 Classical ciphers have search space of  26! ≈ 4×10²⁶, but this type of cipher has a search space on the scale of 2¹²⁸ ≈ 3×10³⁸ (AES-128), making it impossible to attempt an exhaustive search on your average computer. Instead, more intelligent attacks must be utilized to get the key for decryption. The decryption files included for this example only provide an analysis of a sample of search results based on user settings. This algorithm is a good comparison, however, because it is the backbone of modern-day encryption.
 
@@ -691,7 +738,7 @@ Found 0 candidate keys
 
 1. Polybius
 
-The Polybius cipher is possible to brute force due to its size (5x5 or 6x6), making an exhaustive search possible. While the Polybius Square can be randomized, there are still a limited number of cells. Frequency analysis can also be used to decode this cypher without reconstructing the original grid. This makes the decryption methods similar to the Monoalphabetic cipher shown earlier.
+The Polybius cipher is possible to brute force due to its size (5x5 or 6x6), making an exhaustive search possible. While the Polybius Square can be randomized, there are still a limited number of cells. Frequency analysis can also be used to decode this cipher without reconstructing the original grid. This makes the decryption methods similar to the Monoalphabetic cipher shown earlier.
 
 * `encrypt.py` - the encryption class, standardized input.
 * `decrypt.py` - the brute force decryption class, standardized input.
@@ -1000,7 +1047,7 @@ Demo result: 'HELLO'
 * `decrypt.py` - the brute force decryption class, standardized input.
 * `encrypt_test.py` - an LLM generated test case for encryption
 * `decrypt_test.py` - an LLM generated test case for decryption
-* `key_comparison_demo.py` - a demonstration of how dictionaries with partial keys in a brute force attack might preform
+* `key_comparison_demo.py` - a demonstration of how dictionaries with partial keys in a brute force attack might perform
 * `klein_demo.py` - a demo of the Klein attack for real decryption of RC4
 
 The decryption attempts below using `key_comparison_demo.py` shows that during the brute force attempt with the 18 keys, it is possible to decrypt a message from this algorithm by running down the list in the dictionary. Notice that keys using repeating dictionary words are able to be decrypted, but deviations from the dictionary mean that the message may not (and probably not) be decrypted.
@@ -1191,7 +1238,7 @@ Analyzing keystream position 2:
 
 However, with longer keys there were some values that began to stand out. That means that this is NOT perfectly random, and that there is **something** that can be pulled out of this algorithm. 450k samples were run, and some threshold values may need to be tuned, but there are several statistically significant values.
 
-The following is run over the first 16 bytes. Kline discovered that there was the strongest correlation in the first 16-32 bytes.
+The following is run over the first 16 bytes. Klein discovered that there was the strongest correlation in the first 16-32 bytes.
 
 ```python
 Analyzing keystream position 0:
@@ -1447,6 +1494,44 @@ With wrong counter: '3C120D609C7FE1DFE20251'
 
 
 
+### Asymmetric (Public-Key)
+
+The asymmetric examples differ from everything above in a fundamental way: there is no shared secret. Security comes from a *computational asymmetry* — a problem that is cheap to compute in one direction and infeasible to reverse. The teaching value is watching that asymmetry directly: the forward operation runs instantly, while the "attack" file shows the reverse operation's cost climbing as the key size grows. Both examples deliberately use tiny parameters so the attack actually succeeds in front of a class; the lesson is in the *scaling*, not the break.
+
+1. **RSA**
+
+The encryption (`c = m^e mod n`) and legitimate decryption (`m = c^d mod n`) are both fast modular exponentiations. The attacker, holding only the public key `(e, n)`, must factor `n`. The files demonstrate this directly:
+
+* `encrypt.py` — generates the keypair and encrypts with the public key; includes a determinism demo showing how repeated plaintext characters produce identical ciphertext (the textbook-RSA weakness).
+* `decrypt.py` — both the *legitimate* private-key decryption and the *naive attack* (trial-division factoring of `n`), with a cost estimator that reports the `~sqrt(n)` effort.
+* `decrypt_improved.py` — smarter factoring (Fermat's method, Pollard's rho) for the naive-vs-intelligent comparison, exactly paralleling the monoalphabetic and block `decrypt_improved` files.
+
+A nice classroom result: with primes chosen *close together*, Fermat's method factors `n` in a single iteration regardless of key size — a concrete lesson that careless prime selection defeats RSA no matter how large the modulus.
+
+2. **ECDH**
+
+ECDH agrees on a shared secret over a public channel. The forward direction (`scalar * point` via double-and-add) is cheap; recovering the scalar from the resulting point (the elliptic-curve discrete log) is the hard direction.
+
+* `encrypt.py` — builds the curve, runs the full Alice/Bob exchange, and can enumerate every point in the finite group so students see the whole structure at once.
+* `decrypt.py` — the naive discrete-log attack (add `G` repeatedly until the public point is reached), plus shared-secret reconstruction showing that recovering *one* private scalar breaks the whole exchange.
+* `decrypt_improved.py` — Baby-Step Giant-Step, the meet-in-the-middle method that recovers the scalar in `~sqrt(order)` steps. The step counts make the contrast vivid: naive search of scalar `k` takes about `k` steps, while BSGS resolves even large `k` in a handful of giant strides.
+
+
+### Hashing (SHA-256)
+
+SHA-256 has no key and no inverse, so the usual encrypt/decrypt framing does not apply. The three files instead demonstrate correctness and resistance:
+
+* `hash.py` — the full FIPS 180-4 algorithm from scratch (padding, 64-word message schedule, 64-round compression function).
+* `hash_test.py` — drives the hash and, crucially, verifies its output **bit-for-bit against the published NIST test vectors**. A from-scratch hash is only trustworthy if it matches the standard exactly, so this known-answer check is the heart of the test file.
+* `analysis.py` — a **resist-don't-break demonstration** (in the spirit of the ChaCha20 `alg_analysis.py`). Rather than attempting to reverse the hash, it makes the security *properties* visible:
+    * **Avalanche effect:** flipping a single input bit changes about half of the 256 output bits. In testing this averaged ~50.8%, almost exactly the ideal 50%.
+    * **Determinism and sensitivity:** identical inputs always produce identical digests; near-identical inputs produce completely unrelated ones.
+    * **Preimage / collision cost:** a small brute-force search (e.g. finding a digest with a 16-zero-bit prefix) takes thousands of attempts, setting up the scaling argument for why a full preimage (2^256) or collision (2^128, the birthday bound) is infeasible.
+
+A deliberate teaching caveat lives in these files: a *fast* hash like raw SHA-256 is the wrong tool for password storage — that calls for a slow, salted construction (bcrypt, scrypt, Argon2). This heads off a common student misconception, since password hashing is one of the motivating examples in the introduction above.
+
+> **On "resist-don't-break":** several files in this repo demonstrate cryptanalysis by *succeeding* — the Caesar brute-forcer, the RC4 key search, the RSA factoring attack — where the payoff is the moment the cipher falls. A *resist-don't-break* demonstration is the opposite: it runs an analysis that is *meant to fail*, and the lesson lives in watching the algorithm hold and in understanding *why* the attack gains no traction. This is the only honest framing for modern primitives, where no break exists at realistic parameters; it is also the framing that keeps such demonstrations safe to publish, since an analysis that shows resistance at teaching scale has no use as an attack tool. The ChaCha20 and SHA-256 analysis files are the clearest examples.
+
 ## Notes on AI as an Instructional Tool
 
 ### Tool Disclosure 
@@ -1460,7 +1545,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
     * Is it accurate?
     * Is it readable and easy to follow?
 
-2. Given a template and limited instruction, can an AI tool be used to 
+2. Given a template and limited instruction, can an AI tool be used to address the following:
     * Does this make this topic more accessible to students?
     * Does this provide more experimental opportunities?
     * Could students use this tool to reasonably test their own ciphers with a similar format?
@@ -1469,7 +1554,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
 
 ### Incorporation and Testing
 
-* Claude AI was provided the Ceasar Cipher encryption and brute force decryption algorithms as a template/starting point. I wrote the initial version of those algorithms and then asked Claude to improve on the structure and readability. It took several iterations to get a balance between extra features and the format that I wanted for modularity purposes (see the Pandas dataframe for importing algorithm specific variables for the encrypt class). The substitution ciphers were written prior to this exercise, though not in the current class structure. 
+* Claude AI was provided the Caesar Cipher encryption and brute force decryption algorithms as a template/starting point. I wrote the initial version of those algorithms and then asked Claude to improve on the structure and readability. It took several iterations to get a balance between extra features and the format that I wanted for modularity purposes (see the Pandas dataframe for importing algorithm specific variables for the encrypt class). The substitution ciphers were written prior to this exercise, though not in the current class structure. 
 
 * The bulk of the `encrypt` and `decrypt` classes were written first locally, and then the AI tool was used to:
  * 1. Create some consistency between naming within a class, and across the different algorithms
@@ -1560,7 +1645,7 @@ These are general references. As related tutorials and some demos become public,
 10. H. Sidhpurwala, “A Brief History of Cryptography,” www.redhat.com, Jan. 12, 2023. https://www.redhat.com/en/blog/brief-history-cryptography
 
 11. Wikipedia, “History of cryptography,” Wikipedia, Apr. 07, 2019. https://en.wikipedia.org/wiki/History_of_cryptography
-    * As always, not a primary source itself, but inlusdes a collection of interesting references and links to many, many interesting related topics
+    * As always, not a primary source itself, but includes a collection of interesting references and links to many, many interesting related topics
 
 12. T. M. P. Reader, “The Clue to the Labyrinth: Francis Bacon and the Decryption of Nature,” The MIT Press Reader, Feb. 27, 2023. https://thereader.mitpress.mit.edu/the-clue-to-the-labyrinth-francis-bacon-and-the-decryption-of-nature/
 
@@ -1568,16 +1653,16 @@ These are general references. As related tutorials and some demos become public,
     * Includes code example
 
 14. “Baconian Cipher - Francis Bacon Code AABAA - Online Decoder, Solver,” www.dcode.fr. https://www.dcode.fr/bacon-cipher
-    * Life demo encocde and decode from a website that has a large selection of ciphers, games, and cryptography facts
+    * Live demo encode and decode from a website that has a large selection of ciphers, games, and cryptography facts
     
 15. GeeksForGeeks, “Caesar Cipher in Cryptography,” GeeksforGeeks, Jun. 02, 2016. https://www.geeksforgeeks.org/caesar-cipher-in-cryptography/
     * Good explanation, demonstration, and code example
 
 16. “Mono-Alphabetic Substitution Cipher,” 101 Computing, Nov. 09, 2019. https://www.101computing.net/mono-alphabetic-substitution-cipher/
-    * Life demo website for testing monoalphabetic ciphers
+    * Live demo website for testing monoalphabetic ciphers
 
 17. “Monoalphabetic Substitution Cipher - Online Cryptogram Decoder, Solver,” www.dcode.fr. https://www.dcode.fr/monoalphabetic-substitution
-    * Life demo encocde and decode from a website that has a large selection of ciphers, games, and cryptography facts
+    * Live demo encode and decode from a website that has a large selection of ciphers, games, and cryptography facts
     
 18. GeeksforGeeks, “What is Monoalphabetic Cipher?,” GeeksforGeeks, May 07, 2024. https://www.geeksforgeeks.org/computer-networks/what-is-monoalphabetic-cipher/
     * Also includes affine cipher definition
@@ -1628,3 +1713,52 @@ These are general references. As related tutorials and some demos become public,
     * Example implementation for generating and using Salsa20 from the Cipher library in Python
 
 37. GeeksforGeeks, “Stream Ciphers,” GeeksforGeeks, Oct. 09, 2020. https://www.geeksforgeeks.org/computer-networks/stream-ciphers/
+
+**Asymmetric (Public-Key) Cryptography, Hashing, and the Mathematics**
+
+These are the primary sources and standard references for the public-key, hashing, and advanced-mathematics material. Where a foundational paper exists, it is cited directly.
+
+38. R. L. Rivest, A. Shamir, and L. Adleman, “A method for obtaining digital signatures and public-key cryptosystems,” *Communications of the ACM*, vol. 21, no. 2, pp. 120–126, 1978. https://doi.org/10.1145/359340.359342
+    * The original RSA paper. Remarkably readable; worth assigning directly.
+
+39. W. Diffie and M. E. Hellman, “New directions in cryptography,” *IEEE Transactions on Information Theory*, vol. 22, no. 6, pp. 644–654, 1976. https://doi.org/10.1109/TIT.1976.1055638
+    * The paper that introduced public-key cryptography and the Diffie–Hellman key exchange.
+
+40. N. Koblitz, “Elliptic curve cryptosystems,” *Mathematics of Computation*, vol. 48, no. 177, pp. 203–209, 1987. https://doi.org/10.1090/S0025-5718-1987-0866109-5
+    * One of the two independent introductions of elliptic-curve cryptography.
+
+41. V. S. Miller, “Use of elliptic curves in cryptography,” in *Advances in Cryptology — CRYPTO ’85*, LNCS 218, pp. 417–426, 1986. https://doi.org/10.1007/3-540-39799-X_31
+    * The other independent introduction of ECC, same era as Koblitz.
+
+42. D. Shanks, “Class number, a theory of factorization, and genera,” in *Proc. Symp. Pure Math.*, vol. 20, pp. 415–440, 1971.
+    * Origin of the Baby-Step Giant-Step algorithm used in the ECDH `decrypt_improved.py`.
+
+43. National Institute of Standards and Technology, “Secure Hash Standard (SHS),” FIPS PUB 180-4, 2015. https://doi.org/10.6028/NIST.FIPS.180-4
+    * The authoritative SHA-256 specification. The `hash.py` implementation follows this document, and `hash_test.py` checks against its test vectors.
+
+44. J. Katz and Y. Lindell, *Introduction to Modern Cryptography*, 3rd ed. Boca Raton, FL: CRC Press, 2020.
+    * A rigorous, widely-used graduate/advanced-undergraduate textbook. Strong on definitions, proofs, and the reduction-based view of security; good backbone for the "done rigorously" material.
+
+45. D. Hankerson, A. Menezes, and S. Vanstone, *Guide to Elliptic Curve Cryptography*. New York: Springer, 2004. https://doi.org/10.1007/b97644
+    * The standard reference for elliptic curves done properly — the group law, point counting, and the discrete-log problem in full.
+
+46. A. J. Menezes, P. C. van Oorschot, and S. A. Vanstone, *Handbook of Applied Cryptography*. Boca Raton, FL: CRC Press, 1996. (Freely available: https://cacr.uwaterloo.ca/hac/)
+    * Encyclopedic and free. Excellent for the number-theoretic core of RSA: Euler's theorem, the Chinese Remainder Theorem, and primality testing (Miller–Rabin).
+
+47. O. Regev, “On lattices, learning with errors, random linear codes, and cryptography,” *Journal of the ACM*, vol. 56, no. 6, pp. 1–40, 2009. https://doi.org/10.1145/1568318.1568324
+    * The foundational Learning With Errors (LWE) paper; the basis for the lattice-based material.
+
+48. V. Lyubashevsky, C. Peikert, and O. Regev, “On ideal lattices and learning with errors over rings,” in *EUROCRYPT 2010*, LNCS 6110, pp. 1–23, 2010. https://doi.org/10.1007/978-3-642-13190-5_1
+    * The Ring-LWE paper, the efficiency-oriented variant underpinning modern post-quantum schemes.
+
+49. C. Peikert, “A decade of lattice cryptography,” *Foundations and Trends in Theoretical Computer Science*, vol. 10, no. 4, pp. 283–424, 2016. https://doi.org/10.1561/0400000074
+    * A thorough, readable survey — a good bridge from the original LWE papers to a working understanding.
+
+50. S. Goldwasser, S. Micali, and C. Rackoff, “The knowledge complexity of interactive proof systems,” *SIAM Journal on Computing*, vol. 18, no. 1, pp. 186–208, 1989. https://doi.org/10.1137/0218012
+    * The paper that introduced zero-knowledge proofs.
+
+51. A. Fiat and A. Shamir, “How to prove yourself: practical solutions to identification and signature problems,” in *CRYPTO ’86*, LNCS 263, pp. 186–194, 1987. https://doi.org/10.1007/3-540-47721-7_12
+    * The Fiat–Shamir heuristic, turning interactive proofs into non-interactive ones.
+
+52. C. P. Schnorr, “Efficient signature generation by smart cards,” *Journal of Cryptology*, vol. 4, no. 3, pp. 161–174, 1991. https://doi.org/10.1007/BF00196725
+    * The Schnorr identification/signature protocol — the cleanest concrete example of a zero-knowledge-style proof of knowledge.
