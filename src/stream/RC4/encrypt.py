@@ -22,7 +22,7 @@ class encrypt:
         self.parent = parent 
 
         # RC4 works on bytes, not character dictionaries
-        # We're keeping this this for compatibility with the framework
+        # We're keeping this for compatibility with the framework
         self.original_dictionary = dictionary
 
         # Unpack the data frame. While these could be default values, we want them
@@ -50,7 +50,7 @@ class encrypt:
 
     def initialize_rc4(self, key=None):
         # This initializes the RC4 alg with KSA
-        # KSA_ Key Scheduling Algorithm
+        # KSA: Key Scheduling Algorithm
         # "[...]an algorithm that calculates all the round keys from the key."
         # - https://en.wikipedia.org/wiki/Key_schedule
 
@@ -119,7 +119,7 @@ class encrypt:
 
     def generate_keystream(self, length):
         # The function that uses the above single BYTE generation function
-        # this way we can manage streams of differen lengths (and keep track)
+        # this way we can manage streams of different lengths (and keep track)
         # (Claude AI responsible for the pretty table print outs in these 2 functions)
 
         if not self.initialized:
@@ -136,7 +136,7 @@ class encrypt:
         for step in range(length):
             old_i, old_j = self.i, self.j # check this if it looks like something
                                         # isn't re-writing. Might need a DEEPCOPY so 
-                                        # these aren't shaing pointers to the mem 
+                                        # these aren't sharing pointers to the mem 
                                         # address and getting rewritten at the wrong time
             old_si = self.S[(self.i + 1) % 256]
             
@@ -262,7 +262,7 @@ class encrypt:
         # This is for DEMO purposes only. 
         # Meant to show how key changes (even single letter ones)
         # cause the output of the cipher to change. 
-        # This is an extremly SENSITIVE algorithm
+        # This is an extremely SENSITIVE algorithm
 
         test_message = "HELLO WORLD"
         test_keys = [

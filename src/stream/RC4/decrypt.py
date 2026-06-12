@@ -113,7 +113,7 @@ class decrypt:
 
     def initialize_rc4(self, key=None):
         # This initializes the RC4 alg with KSA
-        # KSA_ Key Scheduling Algorithm
+        # KSA: Key Scheduling Algorithm
         # "[...]an algorithm that calculates all the round keys from the key."
         # - https://en.wikipedia.org/wiki/Key_schedule
 
@@ -184,7 +184,7 @@ class decrypt:
 
     def generate_keystream(self, length):
         # The function that uses the above single BYTE generation function
-        # this way we can manage streams of differen lengths (and keep track)
+        # this way we can manage streams of different lengths (and keep track)
         # (Claude AI responsible for the pretty table print outs in these 2 functions)
         # This is identical to the encrypt version of this function
 
@@ -360,7 +360,7 @@ class decrypt:
 
 
     def demonstrate_symmetry(self, plaintext="HELLO RC4", key="TEST"):
-        # Claude AI added as part of the decrypt_tesy.py demo. 
+        # Claude AI added as part of the decrypt_test.py demo. 
         # Since the setup for encryption and decryption are the same,
         # we can take advantage of that and test out the process.
         # That XOR does a lot of heavy lifting!
@@ -405,7 +405,7 @@ class decrypt:
 
 
     def analyze_ciphertext(self, ciphertext):
-        # Since 1-shot decryption on this algorithm is EXTREMLY UNLIKELY,
+        # Since 1-shot decryption on this algorithm is EXTREMELY UNLIKELY,
         # this function analyzes some patterns in the cipher text to make
         # some observations
 
@@ -432,9 +432,9 @@ class decrypt:
             
             # Compare entropy
             if entropy < 6.0:
-                print("Low entropy:: might not be RC4 or very short key.")
+                print("Low entropy: might not be RC4 or very short key.")
             elif entropy > 7.5:
-                print("High entropy:: consistent with good a stream cipher implementation")
+                print("High entropy: consistent with a good stream cipher implementation")
             
         except Exception as e:
             print(f"Error parsing ciphertext: {e}")

@@ -11,7 +11,7 @@
 #   than mine, I used it to redo all of them. Especially the status messages
 #
 #   The thresholds for relevance have been adjusted because of the bias
-#   occuring when looking at the key discovery from the comparison directly
+#   occurring when looking at the key discovery from the comparison directly
 #   to the ground truth (key). Discussion of this is in the README.
 #
 #   Author(s): Lauren Linkous
@@ -34,7 +34,7 @@ class KleinDemo:
 
         
     def generate_related_keystreams(self, base_key, num_samples, keystream_length=64):
-        # Klein's attack works by analyzing a large number of keystreams and finding statistically signifigant
+        # Klein's attack works by analyzing a large number of keystreams and finding statistically significant
         # relations between letters of potential keys and the cipher stream.
 
         # This function generates keystreams with the same key. 
@@ -134,7 +134,7 @@ class KleinDemo:
     
     def analyze_klein_correlations(self, keystreams, keys_used, target_key):
         # This is the main part of the attack. Klein's core discovery was that the
-        # first ~16 to 32 bytes have a statistically signifigant coorelation to the 
+        # first ~16 to 32 bytes have a statistically significant correlation to the 
         # key bytes. 
 
 
@@ -181,7 +181,7 @@ class KleinDemo:
         # The key recovery using the discovered correlations.
         # Most of the time this is going to get NOTHING with our demos. 
         # This implementation is not intelligent enough to modify the tested keys based on 
-        # the signifigant relations.
+        # the significant relations.
         # HOWEVER, it works well enough for the demo.
 
 
@@ -252,7 +252,7 @@ class KleinDemo:
     def analyze_first_bytes_bias(self, keystreams):
         # This was a Claude AI suggestion
         # Pulling this analysis out to a different function because these
-        # first couple bytes are far more signifigant that some sources state
+        # first couple bytes are far more significant that some sources state
         # (The actual disclosure is pretty clear about it though.)
         # 
 
