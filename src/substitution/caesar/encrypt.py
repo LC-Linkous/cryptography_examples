@@ -2,8 +2,8 @@
 
 ##--------------------------------------------------------------------\
 #   encryption_examples
-#   './encryption_examples/src/substitution/ceasar/encrypt.py'
-#   Ceasar cipher encryption class
+#   './encryption_examples/src/substitution/caesar/encrypt.py'
+#   caesar cipher encryption class
 #       
 #
 #   Author(s): Lauren Linkous

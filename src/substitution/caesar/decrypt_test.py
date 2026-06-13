@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   encryption_examples
-#   './encryption_examples/src/substitution/ceasar/decrypt_test.py'
+#   './encryption_examples/src/substitution/caesar/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun. 
 #   Claude also added some additional commentary, which is neat. 
 #
