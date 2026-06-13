@@ -132,6 +132,22 @@ In a substitution cipher, each letter (or symbol) in the plaintext is replaced b
     * This is the most difficult of the substitution ciphers in this section to brute force, and requires some tuning. HOWEVER, even when it does not perform perfectly, it often results in a starting point for further analysis. For example, a high-scoring but incorrect result is still partially readable.
 
 
+4. Atbash Cipher
+    * `Era: ~500 BCE (Hebrew origin) · Type: keyless monoalphabetic substitution · Broken by: applying it again (self-inverse) · Status: insecure, teaching only`
+    * Atbash reverses the alphabet (A↔Z, B↔Y, C↔X, ...). It originated as a Hebrew scribal cipher and appears in the Hebrew Bible. It has **no key at all** — the transformation is fixed — which makes it the simplest substitution in the collection and a clean demonstration of an *involution*: encrypting twice returns the original. It is also exactly the Affine cipher with `a=25, b=25`.
+5. Affine Cipher
+    * `Era: classical generalization · Type: monoalphabetic substitution · Broken by: exhaustive search (only 312 keys) / frequency analysis · Status: insecure, teaching only`
+    * The Affine cipher generalizes Caesar with a multiply *and* an add: `E(x) = (a*x + b) mod 26`, where Caesar is the special case `a=1`. For the map to be invertible, `a` must be coprime with 26, giving 12 valid multipliers × 26 shifts = 312 keys. It is a nice mathematical step up from Caesar — it introduces modular inverses and the coprimality requirement — while still falling to the same attacks.
+6. Vigenère Cipher
+    * `Era: 1553 (Bellaso; later misattributed to Vigenère) · Type: polyalphabetic substitution · Broken by: Kasiski examination / index of coincidence · Status: insecure, teaching only`
+    * A keyword applies a *different* Caesar shift to each successive letter, cycling through the keyword. This is the historical answer to frequency analysis: spreading each plaintext letter across several cipher alphabets flattens the single-letter frequency signature that breaks the monoalphabetic cipher. Known for centuries as *le chiffre indéchiffrable* until Babbage (c. 1854, unpublished) and Kasiski (1863) broke it. The `decrypt.py` implements exactly that break.
+7. Autokey Cipher
+    * `Era: 1586 (Vigenère's actual invention) · Type: polyalphabetic substitution (non-repeating key) · Broken by: primer search exploiting that the key stream is itself English · Status: insecure, teaching only`
+    * The Autokey cipher fixes the fatal weakness of the repeating-key Vigenère: it does **not** repeat the key. A short *primer* keyword starts the key stream, and the plaintext itself continues it. Because the key never repeats, there is no period for the index of coincidence or Kasiski examination to find; the primary attack on Vigenère simply does not apply. (It is still breakable; see the discussion section.)
+8. Beaufort Cipher
+    * `Era: 19th century · Type: polyalphabetic substitution (reciprocal) · Broken by: the same period-finding attack as Vigenère · Status: insecure, teaching only`
+    * A polyalphabetic relative of Vigenère attributed to Sir Francis Beaufort (of wind-scale fame). Where Vigenère adds the key (`C = P + K`), Beaufort subtracts the plaintext from the key (`C = (K - P) mod 26`). The elegant consequence is that Beaufort is **reciprocal**; the same operation both encrypts and decrypts, which is why the Hagelin M-209 cipher machine needed no separate decrypt setting.
+
 ### Transposition Ciphers
 
 A transposition cipher uses the message itself as a form of obfuscation. Rather than changing the letters (substituting), the letters in the message are rearranged to make the message unreadable. 
@@ -147,7 +163,7 @@ A block cipher is a symmetric algorithm that encrypts fixed-size *blocks* of dat
 
 1. Feistel (Block)
     * `Era: 1970s (IBM) · Type: product cipher (Feistel network) · Broken by: not by brute force at real key sizes; cryptanalysis only · Status: foundational structure; DES itself now retired`
-    * The 'block' cipher in this example is a Feistel cipher (also known as the Luby–Rackoff block cipher). It is named after Horst Feistel, a physicist and cryptographer at IBM, and it is the foundational model used in the DES algorithm. The elegant property of a Feistel network is that encryption and decryption use the *same* structure — only the round-key order reverses.
+    * The 'block' cipher in this example is a Feistel cipher (also known as the Luby–Rackoff block cipher). It is named after Horst Feistel, a physicist and cryptographer at IBM, and it is the foundational model used in the DES algorithm. The elegant property of a Feistel network is that encryption and decryption use the *same* structure, except the round-key order reverses.
 
 
 ### Grid Ciphers
@@ -160,7 +176,12 @@ The grid ciphers in this section have some relation to the substitution and tran
     * A Polybius cipher uses a 5x5 grid in order to encode letters into numerical coordinates of a grid. This is a type of `substitution` cipher.
     * Attributed to the Greek historian Polybius.
 
-2. ADFGVX
+2. Playfair
+
+    * `Era: 1854 (Wheatstone; promoted by Lord Playfair) · Type: digraph substitution on a 5x5 key square · Broken by: keyword dictionary search / digraph frequency analysis · Status: insecure, teaching only`
+    * The Playfair cipher encrypts letters **two at a time** using a 5x5 key square. Because it substitutes *pairs* rather than single letters, simple single-letter frequency analysis does not break it the way it breaks the monoalphabetic cipher. It lives in this section because, like Polybius, it is built on a 5x5 grid.
+
+3. ADFGVX
     * `Era: 1918 (WW1) · Type: fractionating substitution + transposition · Broken by: exhaustive search / frequency analysis (famously by Painvin) · Status: insecure, teaching only`
     * This is a WW1 cipher used to send encrypted messages over radiotelegraphy/wireless telemetry. It is a revised version of the earlier ADFGV cipher and uses a modified Polybius square (6x6 compared to the 5x5). 
     * This is a `transposition` cipher but is in this section due to the grid used in the algorithm. This grid form made it possible to implement manually. 
@@ -170,11 +191,16 @@ The grid ciphers in this section have some relation to the substitution and tran
 ### Stream Ciphers
 
 
-1. RC4
+1. One-Time Pad (OTP / Vernam)
+
+    * `Era: 1919 (Vernam patent; Mauborgne's 'random, used once' insight) · Type: stream cipher (XOR pad) · Broken by: nothing when used correctly — provably; catastrophically broken by key reuse · Status: perfect secrecy in theory, brutal key management in practice`
+    * The One-Time Pad is the **only cipher with proven perfect secrecy** (Shannon, 1949). Each plaintext symbol is XOR'ed with a key symbol that is (1) truly random, (2) at least as long as the message, and (3) never reused. Under those conditions the ciphertext reveals literally nothing — every plaintext of that length is an equally likely explanation. The catch is that the three conditions are brutal in practice, and violating any of them collapses the security completely (see the key-reuse demonstration in the discussion section).
+
+2. RC4
     * `Era: 1987 · Type: stream cipher · Broken by: keystream biases (Fluhrer–Mantin–Shamir, Klein) · Status: broken, deprecated`
     * RC4 is a once-popular stream cipher designed in 1987. It has since fallen into disuse due to discovered vulnerabilities. Attacks against this cipher include the 2001 [Fluhrer-Mantin-Shamir attack](https://en.wikipedia.org/wiki/Fluhrer,_Mantin_and_Shamir_attack) and attacks against biases in the keystream, and the 2005 attack by [Andreas Klein](https://en.wikipedia.org/wiki/RC4), which builds upon previous attacks. Later attacks are not examined here. 
 
-2. ChaCha20 
+3. ChaCha20 
     * `Era: 2008 · Type: stream cipher (ARX) · Broken by: no practical break known · Status: secure, in wide modern use`
     * ChaCha20 generates a pseudo-random keystream which is then XOR'ed with the plaintext to encrypt it. This method requires a key and a nonce. ChaCha20 is the 20-round member of the ChaCha family, introduced by Daniel J. Bernstein in 2008 as a refinement of his earlier Salsa20 (2005).
     * Key: a secret value, typically 32 byte/256 bits, used to initialize a cipher's state
@@ -186,7 +212,7 @@ The grid ciphers in this section have some relation to the substitution and tran
 
 ### Asymmetric (Public-Key) Ciphers
 
-Every cipher above is **symmetric**: the same secret is used to encrypt and decrypt, and the two parties must somehow share that secret in advance. Asymmetric (public-key) cryptography removes that requirement entirely. Each party has a *pair* of keys — a public one anyone may hold and a private one kept secret — and the security rests not on a hidden algorithm but on a **mathematical problem that is easy in one direction and infeasible in reverse**. These two examples are the classical pillars of that idea.
+Every cipher above is **symmetric**: the same secret is used to encrypt and decrypt, and the two parties must somehow share that secret in advance. Asymmetric (public-key) cryptography removes that requirement entirely. Each party has a *pair* of keys. A public one anyone may hold and a private one kept secret. Then the security rests not on a hidden algorithm but on a **mathematical problem that is easy in one direction and infeasible in reverse**. These two examples are the classical pillars of that idea.
 
 1. RSA
     * `Era: 1977 · Type: public-key encryption · Hard problem: integer factorization · Status: secure at large key sizes (>= 2048-bit n)`
@@ -203,11 +229,24 @@ Every cipher above is **symmetric**: the same secret is used to encrypt and decr
 
 A cryptographic hash is the odd one out: it is **not encryption at all**. There is no key and no decryption — a hash is a *one-way* function that maps any input to a fixed-size fingerprint (digest). The README's introduction described this as the "one-directional" method used for verification (e.g. storing a password's hash rather than the password); this is the worked example of that idea.
 
-1. SHA-256
+1. Merkle–Damgård (teaching construction)
+    * `Era: 1989 (construction proven by Merkle and Damgård) · Type: hash construction skeleton · Property: collision-resistant iff its compression function is; deliberately inherits the length-extension flaw · Status: teaching only, never for real use`
+    * Not a standard hash — a deliberately *transparent* Merkle–Damgård construction whose only job is to show the skeleton shared by MD5, SHA-1, and SHA-256 without the distraction of an optimized compression function. Once the skeleton is visible, the three real hashes read as 'the same shape with a better compression function and more rounds.' Its `analysis.py` demonstrates the **length-extension attack** the construction inherits (and which SHA-3's sponge design avoids).
+2. MD5
+    * `Era: 1992 (Rivest, RFC 1321) · Type: 128-bit Merkle–Damgård hash · Broken by: practical collisions (Wang et al., 2004) · Status: broken, retired`
+    * Included **as a broken hash**. Practical collisions were announced in 2004 and can now be generated in seconds; MD5 collisions were used to forge a rogue CA certificate in 2008 and a Microsoft code-signing certificate by the Flame malware in 2012. Its value here is entirely pedagogical: it shows the Merkle–Damgård skeleton clearly, and its downfall is one of the great teaching stories in cryptography. Verified against `hashlib` in `hash_test.py`.
+3. SHA-1
+    * `Era: 1995 (NSA/NIST, FIPS 180-1) · Type: 160-bit Merkle–Damgård hash · Broken by: SHATTERED collision (2017), chosen-prefix collisions (2020) · Status: broken, retired`
+    * Also included **as a broken hash**. This is included as a cautionary tale about the gap between 'no attack yet' and 'secure.' Theoretical collision attacks appeared in 2005; the first practical collision (two distinct PDFs with the same digest) arrived in 2017, and cheap chosen-prefix collisions in 2020. SHA-1 secured much of the internet for two decades and limped on in deployed systems long after it was mortally wounded — that migration story is the lesson. Verified against `hashlib` in `hash_test.py`.
+4. SHA-256
     * `Era: 2001 (NSA / NIST, SHA-2 family) · Type: cryptographic hash · Resists: preimage (~2^256) and collision (~2^128, birthday bound) attacks · Status: secure, in wide modern use`
     * SHA-256 pads a message, splits it into 512-bit blocks, and runs each through a 64-round compression function to produce a 256-bit digest. The implementation here is built from scratch and **verified bit-for-bit against the published NIST test vectors** in `hash_test.py`.
-    * Because there is nothing to decrypt, the companion file is `analysis.py` rather than a `decrypt.py`. It is a **resist-don't-break demonstration**: rather than recovering an input, it shows the *properties* that make the hash useful — the avalanche effect (a one-bit input change flips ~half the output bits) and the brute-force cost that makes reversal infeasible. (This mirrors the ChaCha20 `alg_analysis.py` approach: the lesson is in watching the function resist, not in breaking it.)
+    * Because there is nothing to decrypt, the companion file is `analysis.py` rather than a `decrypt.py`. It is a **resist-don't-break demonstration**: rather than recovering an input, it shows the *properties* that make the hash useful; the avalanche effect (a one-bit input change flips ~half the output bits) and the brute-force cost that makes reversal infeasible. (This mirrors the ChaCha20 `alg_analysis.py` approach: the lesson is in watching the function resist, not in breaking it.)
 
+
+5. CRC32
+    * `Era: 1961 (CRCs generally) · Type: checksum — NOT a cryptographic hash · Broken by: design: linear over GF(2), trivially forgeable · Status: excellent for accidental-error detection; zero security against an adversary`
+    * Deliberately included as the **non-cryptographic counterexample**. CRC32 is a checksum designed to detect *accidental* errors (flipped bits from noise), and it is excellent at that. This is used in Ethernet, ZIP, PNG, and gzip. But it is linear over GF(2), has no preimage or collision resistance, and an attacker can modify a message and surgically patch the CRC to match. Holding it next to SHA-256 makes the 'checksum vs. cryptographic hash' distinction unmistakable. Verified against Python's `zlib.crc32` in `hash_test.py`.
 
 ## Some Algorithm Discussion
 
@@ -520,6 +559,57 @@ THESUELVEU ARE ALTERED'''
 Key sample: Z->A, R->I, M->N, G->T, S->H, V->E, I->R, H->U, L->O, K->P...
 
 ```
+
+
+4. **Atbash Cipher**
+
+Atbash is the degenerate case that makes a useful classroom contrast: there is no key, so there is nothing to brute force. "Decryption" *is* the cipher applied a second time (`E(x) = 25 - x`, and `25 - (25 - x) = x`), so the `decrypt.py` class exists for repo symmetry and to make the self-inverse property explicit. The discussion point is why a keyless cipher offers no security at all — every attacker knows the entire transformation — and how Atbash slots into the Affine family (`a=25, b=25`).
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+
+5. **Affine Cipher**
+
+The Affine cipher's key space is its lesson: only 12 valid multipliers (those coprime with 26) × 26 shifts = 312 keys, so the `decrypt.py` attack simply tries every `(a, b)` pair and scores by English letter frequency, reusing the same scoring approach as the Caesar decryptor. The legitimate decryption introduces the modular inverse: `x = a^-1 (y - b) mod 26`. This makes Affine a good bridge between "shift and check" (Caesar) and the number theory that returns later in RSA.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+
+6. **Vigenère Cipher**
+
+This is the cryptanalytic centerpiece of the polyalphabetic additions. The `decrypt.py` implements the historical break in two stages: (a) find the key length via the index of coincidence and/or Kasiski examination (repeated-substring spacing), then (b) split the ciphertext into that many columns — each of which is now a simple Caesar cipher — and solve each column by frequency analysis. The structure shows *why* a longer key is stronger: more columns means less data per column, so the per-column statistics get noisier.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+
+7. **Autokey Cipher**
+
+The pedagogical point of including Autokey next to Vigenère is the contrast in attacks. The Kasiski/index-of-coincidence attack *fails* here — the key stream is `PRIMER + PLAINTEXT`, so it never repeats and there is no period to find. Instead, the cipher is broken by exploiting that the key stream is itself English text: the `decrypt.py` brute forces short primers (the practical case) and scores the recovered plaintext for English-likeness. The legitimate decryption is also fun to step through: the first letters are decrypted with the primer, and each recovered plaintext letter then becomes the next key letter — the key stream "unzips" itself as you go.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+
+8. **Beaufort Cipher**
+
+Because Beaufort is reciprocal (`P = (K - C) mod 26` has the same form as encryption), legitimate decryption is identical to encryption with the same key — a nice property to demonstrate alongside Atbash's self-inverse and RC4/ChaCha20's XOR symmetry later in the collection. The attack is the same period-finding approach as Vigenère, with each column solved subtractively rather than additively, reusing the same statistical machinery.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
 
 
 ### Transposition
@@ -1038,10 +1128,37 @@ Demo result: 'HELLO'
 
 
 
+3. **Playfair**
+
+Playfair's key square has a 25! key space, so exhaustive search is hopeless even though the grid physically resembles Polybius. The realistic classical attack — implemented in `decrypt.py` — is a keyword *dictionary* search, scoring each candidate square by letter frequency. (A full break uses simulated annealing on digraph frequencies; that is noted in the code as a natural `decrypt_improved`-style extension.) One quirk worth showing a class: Playfair inserts pad letters during encryption (an X between doubled letters, a trailing X on odd-length messages), so a correctly recovered message may still contain stray X's. This is expected and is part of the lesson.
+
+* `encrypt.py` - the encryption class, standardized input.
+* `decrypt.py` - the brute force decryption class, standardized input.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+
+
 ### Stream and Hash
 
+1. **One-Time Pad (OTP)**
 
-1. RC4 
+The OTP files are a *proof demonstration* rather than an attack demonstration, and they pair naturally with the resist-don't-break framing used for ChaCha20 and SHA-256:
+
+* `encrypt.py` - the encryption class (byte-wise XOR pad, plus a mod-26 letter variant for the historical form), standardized input.
+* `decrypt.py` - legitimate decryption with the pad, plus the two demonstrations below.
+* `encrypt_test.py` - an LLM generated test case for encryption
+* `decrypt_test.py` - an LLM generated test case for decryption
+
+The two demonstrations in `decrypt.py` are the whole lesson:
+
+* **Perfect secrecy:** brute-forcing the key produces *every* possible plaintext of the right length, each equally valid — the demo shows that the same ciphertext can be "decrypted" to any chosen message by some key, so the attacker gains zero information. This is Shannon's 1949 result made tangible.
+* **Key-reuse catastrophe:** if one pad encrypts two messages, XORing the two ciphertexts cancels the key (`c1 ^ c2 = p1 ^ p2`), leaking the XOR of the plaintexts — which is readable. This is the classic "two-time pad" break that has sunk real systems (VENONA).
+
+Together they bracket the OTP's strange position in the collection: the only provably unbreakable cipher, and one of the easiest to break in practice when its conditions are violated.
+
+
+2. RC4 
 
 * `encrypt.py` - the encryption class, standardized input.
 * `decrypt.py` - the brute force decryption class, standardized input.
@@ -1434,7 +1551,7 @@ However, also consider that if a key is generated by a person rather than a comp
 
 
 
-2. ChaCha20
+3. ChaCha20
 
 
 * `encrypt.py` - the encryption class, standardized input.
@@ -1531,6 +1648,17 @@ SHA-256 has no key and no inverse, so the usual encrypt/decrypt framing does not
 A deliberate teaching caveat lives in these files: a *fast* hash like raw SHA-256 is the wrong tool for password storage — that calls for a slow, salted construction (bcrypt, scrypt, Argon2). This heads off a common student misconception, since password hashing is one of the motivating examples in the introduction above.
 
 > **On "resist-don't-break":** several files in this repo demonstrate cryptanalysis by *succeeding* — the Caesar brute-forcer, the RC4 key search, the RSA factoring attack — where the payoff is the moment the cipher falls. A *resist-don't-break* demonstration is the opposite: it runs an analysis that is *meant to fail*, and the lesson lives in watching the algorithm hold and in understanding *why* the attack gains no traction. This is the only honest framing for modern primitives, where no break exists at realistic parameters; it is also the framing that keeps such demonstrations safe to publish, since an analysis that shows resistance at teaching scale has no use as an attack tool. The ChaCha20 and SHA-256 analysis files are the clearest examples.
+
+**The rest of the hash family**
+
+SHA-256 is the worked example above, but the `hashing` directory holds four companions, each with the same `hash.py` / `hash_test.py` / `analysis.py` structure:
+
+* **Merkle–Damgård (teaching construction)** — `hash.py` is a deliberately transparent implementation of the construction itself: pad with the message length encoded ("MD strengthening"), split into blocks, and chain a compression function from a fixed IV. The theorem (Merkle, Damgård, 1989) is that if the compression function is collision-resistant, the whole hash is — which is why hash design reduces to compression-function design. `analysis.py` demonstrates the construction's inherited flaw live: the **length-extension attack**, possible because the output *is* the final chaining value.
+* **MD5** — follows RFC 1321 and is verified against `hashlib`. `analysis.py` tells the collision story (Wang et al. 2004, the rogue CA certificate, Flame) and includes a real collision pair, so students can hash two different inputs and watch the digests match.
+* **SHA-1** — follows FIPS 180-4 and is verified against `hashlib`. `analysis.py` covers SHATTERED (2017) and the migration lesson: how long a wounded primitive can limp on in deployed systems after "no attack yet" stops being true.
+* **CRC32** — the non-cryptographic counterexample, verified against `zlib.crc32`. `analysis.py` demonstrates *why* it is not a cryptographic hash: its linearity over GF(2) (`CRC(a^b) = CRC(a) ^ CRC(b) ^ CRC(0)`) and the trivial forgery that linearity allows. It is excellent at its actual job (detecting accidental errors) and useless against an adversary — the cleanest way to make the checksum/hash distinction stick.
+
+Reading order matters here: Merkle–Damgård first (the skeleton), then MD5 and SHA-1 (the skeleton broken twice, for different reasons and on different timelines), then SHA-256 (the skeleton holding), with CRC32 off to the side as the "this was never even playing the same game" comparison.
 
 ## Notes on AI as an Instructional Tool
 
@@ -1718,47 +1846,47 @@ These are general references. As related tutorials and some demos become public,
 
 These are the primary sources and standard references for the public-key, hashing, and advanced-mathematics material. Where a foundational paper exists, it is cited directly.
 
-38. R. L. Rivest, A. Shamir, and L. Adleman, “A method for obtaining digital signatures and public-key cryptosystems,” *Communications of the ACM*, vol. 21, no. 2, pp. 120–126, 1978. https://doi.org/10.1145/359340.359342
+38. R. L. Rivest, A. Shamir, and L. Adleman, “A method for obtaining digital signatures and public-key cryptosystems,” Communications of the ACM, vol. 21, no. 2, pp. 120–126, 1978. https://doi.org/10.1145/359340.359342
     * The original RSA paper. Remarkably readable; worth assigning directly.
 
-39. W. Diffie and M. E. Hellman, “New directions in cryptography,” *IEEE Transactions on Information Theory*, vol. 22, no. 6, pp. 644–654, 1976. https://doi.org/10.1109/TIT.1976.1055638
+39. W. Diffie and M. E. Hellman, “New directions in cryptography,” IEEE Transactions on Information Theory, vol. 22, no. 6, pp. 644–654, 1976. https://doi.org/10.1109/TIT.1976.1055638
     * The paper that introduced public-key cryptography and the Diffie–Hellman key exchange.
 
-40. N. Koblitz, “Elliptic curve cryptosystems,” *Mathematics of Computation*, vol. 48, no. 177, pp. 203–209, 1987. https://doi.org/10.1090/S0025-5718-1987-0866109-5
+40. N. Koblitz, “Elliptic curve cryptosystems,” Mathematics of Computation, vol. 48, no. 177, pp. 203–209, 1987. https://doi.org/10.1090/S0025-5718-1987-0866109-5
     * One of the two independent introductions of elliptic-curve cryptography.
 
-41. V. S. Miller, “Use of elliptic curves in cryptography,” in *Advances in Cryptology — CRYPTO ’85*, LNCS 218, pp. 417–426, 1986. https://doi.org/10.1007/3-540-39799-X_31
+41. V. S. Miller, “Use of elliptic curves in cryptography,” in Advances in Cryptology — CRYPTO ’85, LNCS 218, pp. 417–426, 1986. https://doi.org/10.1007/3-540-39799-X_31
     * The other independent introduction of ECC, same era as Koblitz.
 
-42. D. Shanks, “Class number, a theory of factorization, and genera,” in *Proc. Symp. Pure Math.*, vol. 20, pp. 415–440, 1971.
+42. D. Shanks, “Class number, a theory of factorization, and genera,” in Proc. Symp. Pure Math., vol. 20, pp. 415–440, 1971.
     * Origin of the Baby-Step Giant-Step algorithm used in the ECDH `decrypt_improved.py`.
 
 43. National Institute of Standards and Technology, “Secure Hash Standard (SHS),” FIPS PUB 180-4, 2015. https://doi.org/10.6028/NIST.FIPS.180-4
     * The authoritative SHA-256 specification. The `hash.py` implementation follows this document, and `hash_test.py` checks against its test vectors.
 
-44. J. Katz and Y. Lindell, *Introduction to Modern Cryptography*, 3rd ed. Boca Raton, FL: CRC Press, 2020.
+44. J. Katz and Y. Lindell, Introduction to Modern Cryptography, 3rd ed. Boca Raton, FL: CRC Press, 2020.
     * A rigorous, widely-used graduate/advanced-undergraduate textbook. Strong on definitions, proofs, and the reduction-based view of security; good backbone for the "done rigorously" material.
 
-45. D. Hankerson, A. Menezes, and S. Vanstone, *Guide to Elliptic Curve Cryptography*. New York: Springer, 2004. https://doi.org/10.1007/b97644
+45. D. Hankerson, A. Menezes, and S. Vanstone, Guide to Elliptic Curve Cryptography. New York: Springer, 2004. https://doi.org/10.1007/b97644
     * The standard reference for elliptic curves done properly — the group law, point counting, and the discrete-log problem in full.
 
-46. A. J. Menezes, P. C. van Oorschot, and S. A. Vanstone, *Handbook of Applied Cryptography*. Boca Raton, FL: CRC Press, 1996. (Freely available: https://cacr.uwaterloo.ca/hac/)
+46. A. J. Menezes, P. C. van Oorschot, and S. A. Vanstone, Handbook of Applied Cryptography. Boca Raton, FL: CRC Press, 1996. (Freely available: https://cacr.uwaterloo.ca/hac/)
     * Encyclopedic and free. Excellent for the number-theoretic core of RSA: Euler's theorem, the Chinese Remainder Theorem, and primality testing (Miller–Rabin).
 
-47. O. Regev, “On lattices, learning with errors, random linear codes, and cryptography,” *Journal of the ACM*, vol. 56, no. 6, pp. 1–40, 2009. https://doi.org/10.1145/1568318.1568324
+47. O. Regev, “On lattices, learning with errors, random linear codes, and cryptography,” Journal of the ACM, vol. 56, no. 6, pp. 1–40, 2009. https://doi.org/10.1145/1568318.1568324
     * The foundational Learning With Errors (LWE) paper; the basis for the lattice-based material.
 
-48. V. Lyubashevsky, C. Peikert, and O. Regev, “On ideal lattices and learning with errors over rings,” in *EUROCRYPT 2010*, LNCS 6110, pp. 1–23, 2010. https://doi.org/10.1007/978-3-642-13190-5_1
+48. V. Lyubashevsky, C. Peikert, and O. Regev, “On ideal lattices and learning with errors over rings,” in EUROCRYPT 2010, LNCS 6110, pp. 1–23, 2010. https://doi.org/10.1007/978-3-642-13190-5_1
     * The Ring-LWE paper, the efficiency-oriented variant underpinning modern post-quantum schemes.
 
-49. C. Peikert, “A decade of lattice cryptography,” *Foundations and Trends in Theoretical Computer Science*, vol. 10, no. 4, pp. 283–424, 2016. https://doi.org/10.1561/0400000074
+49. C. Peikert, “A decade of lattice cryptography,” Foundations and Trends in Theoretical Computer Science, vol. 10, no. 4, pp. 283–424, 2016. https://doi.org/10.1561/0400000074
     * A thorough, readable survey — a good bridge from the original LWE papers to a working understanding.
 
-50. S. Goldwasser, S. Micali, and C. Rackoff, “The knowledge complexity of interactive proof systems,” *SIAM Journal on Computing*, vol. 18, no. 1, pp. 186–208, 1989. https://doi.org/10.1137/0218012
+50. S. Goldwasser, S. Micali, and C. Rackoff, “The knowledge complexity of interactive proof systems,” SIAM Journal on Computing, vol. 18, no. 1, pp. 186–208, 1989. https://doi.org/10.1137/0218012
     * The paper that introduced zero-knowledge proofs.
 
-51. A. Fiat and A. Shamir, “How to prove yourself: practical solutions to identification and signature problems,” in *CRYPTO ’86*, LNCS 263, pp. 186–194, 1987. https://doi.org/10.1007/3-540-47721-7_12
+51. A. Fiat and A. Shamir, “How to prove yourself: practical solutions to identification and signature problems,” in CRYPTO ’86, LNCS 263, pp. 186–194, 1987. https://doi.org/10.1007/3-540-47721-7_12
     * The Fiat–Shamir heuristic, turning interactive proofs into non-interactive ones.
 
-52. C. P. Schnorr, “Efficient signature generation by smart cards,” *Journal of Cryptology*, vol. 4, no. 3, pp. 161–174, 1991. https://doi.org/10.1007/BF00196725
+52. C. P. Schnorr, “Efficient signature generation by smart cards,” Journal of Cryptology, vol. 4, no. 3, pp. 161–174, 1991. https://doi.org/10.1007/BF00196725
     * The Schnorr identification/signature protocol — the cleanest concrete example of a zero-knowledge-style proof of knowledge.
