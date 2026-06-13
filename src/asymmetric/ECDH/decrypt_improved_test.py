@@ -14,9 +14,9 @@
 ##--------------------------------------------------------------------\
 
 import pandas as pd
-from asymmetric.ECDH.encrypt import encrypt
-from asymmetric.ECDH.decrypt import decrypt
-from asymmetric.ECDH.decrypt_improved import decrypt_improved
+from encrypt import encrypt
+from decrypt import decrypt
+from decrypt_improved import decrypt_improved
 
 
 print("=== ECDH Attack Comparison: Naive vs Baby-Step Giant-Step ===")

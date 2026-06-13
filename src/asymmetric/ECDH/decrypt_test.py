@@ -14,8 +14,8 @@
 ##--------------------------------------------------------------------\
 
 import pandas as pd
-from asymmetric.ECDH.encrypt import encrypt
-from asymmetric.ECDH.decrypt import decrypt
+from encrypt import encrypt
+from decrypt import decrypt
 
 
 print("=== ECDH Naive Attack Example ===")

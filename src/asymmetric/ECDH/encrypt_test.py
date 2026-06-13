@@ -14,7 +14,7 @@
 
 import pandas as pd
 
-from asymmetric.ECDH.encrypt import encrypt
+from encrypt import encrypt
 
 
 print("=== ECDH Key Exchange Educational Example ===")
