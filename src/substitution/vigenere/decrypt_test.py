@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/vigenere/decrypt_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/vigenere/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #
 #   Shows (1) legitimate decryption with the keyword, and (2) the historical

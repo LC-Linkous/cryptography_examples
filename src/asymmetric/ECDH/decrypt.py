@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/ecdh/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/ecdh/decrypt.py'
 #   ECDH attacker (TEACHING-SIZED curve) - naive discrete log
 #
 #   Companion to the symmetric decrypt classes and to RSA's decrypt.py.

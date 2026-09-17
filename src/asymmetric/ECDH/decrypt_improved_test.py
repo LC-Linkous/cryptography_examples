@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/ecdh/decrypt_improved_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/ecdh/decrypt_improved_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #
 #   Compares the NAIVE discrete-log attack (decrypt.py, ~order steps)

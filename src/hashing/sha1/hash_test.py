@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/sha1/hash_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/sha1/hash_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #   Verifies the from-scratch SHA-1 against Python's hashlib.
 #   Last update: June 02, 2026

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/sha256/analysis.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/sha256/analysis.py'
 #   SHA-256 property analysis (educational)
 #
 #   A hash has no key and no decryption, so there is no 'decrypt' attack

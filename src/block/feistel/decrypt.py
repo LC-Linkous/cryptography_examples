@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/transposition/block/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/transposition/block/decrypt.py'
 #   Rail Fence cipher brute force decryption class
 #
 #   Block ciphers have enormous key spaces (2^64 to 2^256) making

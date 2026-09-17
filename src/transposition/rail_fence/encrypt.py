@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/transposition/rail_fence/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/transposition/rail_fence/encrypt.py'
 #  Rail Fence transposition cipher encryption class
 #       
 #

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/rsa/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/rsa/encrypt.py'
 #   RSA public-key encryption class (TEXTBOOK RSA - educational only)
 #
 #   This is the first ASYMMETRIC example in the repo. Unlike the

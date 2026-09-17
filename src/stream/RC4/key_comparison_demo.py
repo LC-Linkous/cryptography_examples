@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/RC4/key_comparison_demo.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/RC4/key_comparison_demo.py'
 #   RC4 dictionary brute force demo: how partial / repeated keys perform
 #
 #   This is a stand-alone demo (NOT the standardized decrypt class). It

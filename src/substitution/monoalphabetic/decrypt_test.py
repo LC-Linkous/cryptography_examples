@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples  
-#   './encryption_examples/src/substitution/monoalphabetic/decrypt_test.py'
+#   cryptography_examples  
+#   './cryptography_examples/src/substitution/monoalphabetic/decrypt_test.py'
 #   Improved Monoalphabetic cipher decryption class
 #   
 #   Author: Lauren Linkous

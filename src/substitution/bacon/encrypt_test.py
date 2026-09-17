@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/bacon/encrypt_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/bacon/encrypt_test.py'
 #   Some AI generated test cases, for fun. 
 #   Claude also added some additional commentary, which is neat. 
 #

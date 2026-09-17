@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/sha256/hash.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/sha256/hash.py'
 #   SHA-256 cryptographic hash function (from scratch, educational)
 #
 #   This is the repo's first HASHING example. A hash is NOT encryption:

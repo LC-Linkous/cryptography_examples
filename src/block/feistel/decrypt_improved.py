@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/transposition/block/decrypt_improved.py'
+#   cryptography_examples
+#   './cryptography_examples/src/transposition/block/decrypt_improved.py'
 #   Block cipher cryptanalysis and attack methods
 #   
 #   Block ciphers have enormous key spaces (2^64 to 2^256) making

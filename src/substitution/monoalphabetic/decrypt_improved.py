@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##---------------------------------------------------------------------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/monoalphabetic/decrypt_improved.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/monoalphabetic/decrypt_improved.py'
 #   improved monoalphabetic cipher decryption class
 #       
 #  monoalphabetic ciphers can't be broken by trying all possible keys (26! is impossibly large). 

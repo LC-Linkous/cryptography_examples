@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/monoalphabetic/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/monoalphabetic/encrypt.py'
 #   Monoalphabetic cipher encryption class
 #       
 #

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/merkle_damgard/hash.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/merkle_damgard/hash.py'
 #   A clean Merkle-Damgard teaching hash (from scratch, educational)
 #
 #   This is NOT a standard hash and must NEVER be used for anything real.

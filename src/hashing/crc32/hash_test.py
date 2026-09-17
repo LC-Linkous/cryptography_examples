@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/crc32/hash_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/crc32/hash_test.py'
 #   Verifies the from-scratch CRC32 against Python's zlib.crc32.
 #   Last update: June 02, 2026
 ##--------------------------------------------------------------------\

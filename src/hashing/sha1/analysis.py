@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/sha1/analysis.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/sha1/analysis.py'
 #   Why SHA-1 is BROKEN: the SHATTERED story and the migration lesson.
 #   Last update: June 02, 2026
 ##--------------------------------------------------------------------\

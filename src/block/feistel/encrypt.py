@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/transposition/block/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/transposition/block/encrypt.py'
 #   Simple block cipher encryption class. This is based on the Feistel cipher.
 #       
 #

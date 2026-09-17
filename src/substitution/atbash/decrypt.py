@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/atbash/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/atbash/decrypt.py'
 #   Atbash cipher decryption class
 #
 #   Atbash is an INVOLUTION: applying it twice returns the original, so

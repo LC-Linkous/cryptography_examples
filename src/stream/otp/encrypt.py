@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/otp/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/otp/encrypt.py'
 #   One-Time Pad (Vernam cipher) encryption class
 #
 #   The One-Time Pad is the ONLY cipher with PROVEN perfect secrecy

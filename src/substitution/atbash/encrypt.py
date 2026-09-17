@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/atbash/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/atbash/encrypt.py'
 #   Atbash cipher encryption class
 #
 #   Atbash is one of the oldest known ciphers: a monoalphabetic substitution

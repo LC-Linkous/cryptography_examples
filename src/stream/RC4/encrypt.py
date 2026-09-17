@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/rc4/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/rc4/encrypt.py'
 #   RC4 stream cipher encryption class
 #       
 #

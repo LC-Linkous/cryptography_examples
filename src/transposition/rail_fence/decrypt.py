@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/transposition/rail_fence/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/transposition/rail_fence/decrypt.py'
 #   Rail Fence cipher brute force decryption class
 #
 #   Rail Fence ciphers have a small key space (number of rails), making them

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/beaufort/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/beaufort/decrypt.py'
 #   Beaufort cipher decryption class
 #
 #   Because Beaufort is RECIPROCAL (P = (K - C) mod 26 has the same form as

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/affine/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/affine/encrypt.py'
 #   Affine cipher encryption class
 #
 #   The Affine cipher generalizes the Caesar cipher with a multiply AND an

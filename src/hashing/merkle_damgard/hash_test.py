@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/merkle_damgard/hash_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/merkle_damgard/hash_test.py'
 #   Tests for the teaching Merkle-Damgard hash: determinism, avalanche,
 #   and the structural properties (it is NOT checked against a standard,
 #   because it is a teaching construction, not a standard hash).

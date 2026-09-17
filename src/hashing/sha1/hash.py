@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/sha1/hash.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/sha1/hash.py'
 #   SHA-1 cryptographic hash function (from scratch, educational)
 #
 #   SHA-1 (NSA/NIST, 1995, FIPS 180-1) is a 160-bit Merkle-Damgard hash that

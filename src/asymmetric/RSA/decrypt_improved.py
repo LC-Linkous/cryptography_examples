@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/rsa/decrypt_improved.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/rsa/decrypt_improved.py'
 #   RSA "smart attack" class (TEXTBOOK RSA - educational only)
 #
 #   Companion to decrypt.py, in the same spirit as the monoalphabetic and

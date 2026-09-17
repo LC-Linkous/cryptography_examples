@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/otp/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/otp/decrypt.py'
 #   One-Time Pad (Vernam cipher) decryption class
 #
 #   Two roles:

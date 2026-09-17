@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/RC4/klein_demo.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/RC4/klein_demo.py'
 #   RC4 decryption via Klein attack
 #       
 #   The method of this attack was pulled form several online sources 

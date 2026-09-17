@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/monoalphabetic/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/monoalphabetic/decrypt.py'
 #   Ceasar cipher decryption class
 #       
 #  monoalphabetic ciphers can't be broken by trying all possible keys (26! is impossibly large). 

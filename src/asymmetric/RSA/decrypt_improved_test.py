@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/rsa/decrypt_improved_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/rsa/decrypt_improved_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #
 #   This compares the NAIVE attack (decrypt.py, trial division) against

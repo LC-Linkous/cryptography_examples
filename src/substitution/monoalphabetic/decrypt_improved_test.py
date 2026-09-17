@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples  
-#   './encryption_examples/src/substitution/monoalphabetic/decrypt_improved_test.py'
+#   cryptography_examples  
+#   './cryptography_examples/src/substitution/monoalphabetic/decrypt_improved_test.py'
 #   Simple test cases for the improved decryption
 #   No extra Claude commentary in this one.
 #

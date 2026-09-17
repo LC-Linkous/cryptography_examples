@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/autokey/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/autokey/encrypt.py'
 #   Autokey cipher encryption class
 #
 #   The Autokey cipher (Vigenere, 1586 -- his actual invention, ironically

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/autokey/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/autokey/decrypt.py'
 #   Autokey cipher decryption class
 #
 #   Two roles:

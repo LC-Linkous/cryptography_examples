@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/crc32/analysis.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/crc32/analysis.py'
 #   Why CRC32 is NOT a cryptographic hash: linearity and trivial forgery.
 #   Last update: June 02, 2026
 ##--------------------------------------------------------------------\

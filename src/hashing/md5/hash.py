@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/md5/hash.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/md5/hash.py'
 #   MD5 cryptographic hash function (from scratch, educational)
 #
 #   MD5 (Rivest, 1992, RFC 1321) is a 128-bit hash built on the Merkle-

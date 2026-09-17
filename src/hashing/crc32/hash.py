@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/crc32/hash.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/crc32/hash.py'
 #   CRC32 -- a CHECKSUM, deliberately included as a NON-cryptographic
 #   counterexample
 #

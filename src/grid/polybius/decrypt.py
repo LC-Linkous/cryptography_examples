@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/grid/polybius/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/grid/polybius/decrypt.py'
 #   Polybius Square cipher decryption class
 #       
 #

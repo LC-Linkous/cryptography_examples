@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/stream/chacha20/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/stream/chacha20/decrypt.py'
 #   ChaCha20 stream cipher decryption class
 #       
 #

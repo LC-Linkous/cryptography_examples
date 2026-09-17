@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/hashing/merkle_damgard/analysis.py'
+#   cryptography_examples
+#   './cryptography_examples/src/hashing/merkle_damgard/analysis.py'
 #   The Merkle-Damgard construction: the security theorem AND the inherited
 #   length-extension flaw, demonstrated live.
 #   Last update: June 02, 2026

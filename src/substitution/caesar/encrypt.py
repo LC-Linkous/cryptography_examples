@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/caesar/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/caesar/encrypt.py'
 #   caesar cipher encryption class
 #       
 #

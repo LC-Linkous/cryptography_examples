@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/grids/playfair/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/grids/playfair/decrypt.py'
 #   Playfair cipher decryption class
 #
 #   Two roles, matching the other decrypt classes in this repo:

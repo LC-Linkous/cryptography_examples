@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/affine/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/affine/decrypt.py'
 #   Affine cipher decryption class
 #
 #   Two roles, matching the repo:

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/bacon/decrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/bacon/decrypt.py'
 #   Baconian cipher brute force decryption class
 #   
 #   Author: Lauren Linkous

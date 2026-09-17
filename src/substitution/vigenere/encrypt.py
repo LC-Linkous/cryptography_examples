@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/substitution/vigenere/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/substitution/vigenere/encrypt.py'
 #   Vigenere cipher encryption class
 #
 #   The Vigenere cipher is a POLYALPHABETIC substitution cipher: it uses a

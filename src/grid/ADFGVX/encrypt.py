@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/grid/adfgvx/encrypt.py'
+#   cryptography_examples
+#   './cryptography_examples/src/grid/adfgvx/encrypt.py'
 #   ADFGVX cipher encryption class
 #       
 #

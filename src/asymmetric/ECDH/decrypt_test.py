@@ -1,8 +1,8 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   encryption_examples
-#   './encryption_examples/src/asymmetric/ecdh/decrypt_test.py'
+#   cryptography_examples
+#   './cryptography_examples/src/asymmetric/ecdh/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #
 #   This shows the ATTACKER's view: given only the public curve, G, and a
