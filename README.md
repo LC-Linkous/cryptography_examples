@@ -23,7 +23,7 @@ Claude AI was used to generate the test cases for the **public** version of this
 * [What is Encryption?](#what-is-encryption)
 * [Requirements](#requirements)
 * [Implementation](#implementation)
-* [Included in this Project](#included-in-this-project)
+* [Included in this Repository](#included-in-this-repository)
     * [Substitution Ciphers](#substitution-ciphers)
     * [Transposition Ciphers](#transposition-ciphers)
     * [Block Ciphers](#block-ciphers)
@@ -91,7 +91,7 @@ numpy
 Optionally, requirements can be installed manually with:
 
 ```python
-pip install pandas, numpy
+pip install pandas numpy
 
 ```
 This is an example for if you've had a difficult time with the requirements.txt file. Sometimes libraries are packaged together.
@@ -1694,7 +1694,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
 
 * Claude AI was used to generate the `encrypt_test.py` and `decrypt_test.py` classes. I made very few edits to those (primarily to correct some factual errors or non-existent function calls)
 
-* For comparison purposes, Claude AI was told to make a version of `transposition/block/decrypt.py` and corresponding test function where it could make changes, additions, and commentary to improve the accuracy of the brute force decryption. 
+* For comparison purposes, Claude AI was told to make a version of `block/feistel/decrypt.py` and corresponding test function where it could make changes, additions, and commentary to improve the accuracy of the brute force decryption. 
     * This had an increased PASS rate of test cases, but upon closer inspection this is because specific words unique to the testcases were inserted into the dictionary by Claude AI. 
     * On the given test cases there was no noticeable improvement on the brute force algorithm in general.
 
@@ -1734,7 +1734,7 @@ A paid version of Claude AI (https://claude.ai) was used in this project as deta
 3. AI Generated Commentary
     * (disclaimer: no attempt was made to instruct otherwise)
     * Claude inserted a lot of commentary into the test cases for encryption and decryption, some of which was off topic.
-    * When fed multiple algorithms in the same chat, it would begin to compare them unprompted. This was not a bad thing, but discussion was intended to be reserved for outside the encryption and decryption process. When Claude was allowed to make modifications (See `transposition/block/decrypt_improved_test.py`), it inserted a lot of commentary and tended to make modifications that did not apply to the current problem/topic, or code was modified to allow test cases to pass. 
+    * When fed multiple algorithms in the same chat, it would begin to compare them unprompted. This was not a bad thing, but discussion was intended to be reserved for outside the encryption and decryption process. When Claude was allowed to make modifications (See `block/feistel/decrypt_improved_test.py`), it inserted a lot of commentary and tended to make modifications that did not apply to the current problem/topic, or code was modified to allow test cases to pass. 
 
 
 
