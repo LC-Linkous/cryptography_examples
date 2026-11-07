@@ -10,11 +10,14 @@
 #   Last update: June 22, 2025
 ##--------------------------------------------------------------------\
 
+import os
+import sys
 import numpy as np
-import pandas as pd
-import string
-from collections import Counter
-import re
+
+# Allow 'from common...' whether this file is run from its own folder (the
+# repo convention) or imported from the tests/ directory.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+from common.english_score import ENGLISH_FREQ, chi_squared_score
 
 
 #
@@ -37,18 +40,10 @@ class decrypt:
         self.original_dictionary = np.array(self.dictionary)
         self.wrap_separately = wrap_separately
         
-        # Common letter frequencies (for scoring)
-        if lang_freq == None:
-            # English default
-            self.lang_freq = {
-                'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,
-                'S': 6.3, 'H': 6.1, 'R': 6.0, 'D': 4.3, 'L': 4.0, 'C': 2.8,
-                'U': 2.8, 'M': 2.4, 'W': 2.4, 'F': 2.2, 'G': 2.0, 'Y': 2.0,
-                'P': 1.9, 'B': 1.3, 'V': 1.0, 'K': 0.8, 'J': 0.15, 'X': 0.15,
-                'Q': 0.10, 'Z': 0.07
-            }
-        else:
-            self.lang_freq = lang_freq
+        # Letter frequencies used for scoring; English by default. The
+        # table lives in src/common/english_score.py so every decrypt
+        # class shares one copy.
+        self.lang_freq = ENGLISH_FREQ if lang_freq is None else lang_freq
 
 
 
@@ -114,29 +109,14 @@ class decrypt:
         return shifted_values
 
     def calculate_english_score(self, text):
-       # Calculate how "English-like" a text is based on letter frequency
-       # Score (higher = more English-like)
-        
-        # Remove non-alphabetic characters and convert to uppercase
-        clean_text = re.sub(r'[^A-Za-z]', '', text.upper())
-        
-        if len(clean_text) == 0:
-            return 0
-        
-        # Count letter frequencies
-        letter_counts = Counter(clean_text)
-        total_letters = len(clean_text)
-        
-        # Calculate score based on how close frequencies are to English
-        score = 0
-        for letter, count in letter_counts.items():
-            observed_freq = (count / total_letters) * 100
-            expected_freq = self.lang_freq.get(letter, 0)
-            
-            # Use negative squared difference (closer to expected = higher score)
-            score -= (observed_freq - expected_freq) ** 2
-        
-        return score
+        # How "English-like" is this text? Higher = more English-like.
+        #
+        # Uses the chi-squared statistic over ALL 26 letters. The previous
+        # version only summed over letters present in the candidate, which
+        # rewarded candidates with few distinct letters; the README example
+        # ('KHOOR ZRUOG' -> 'aXeeh phkeW' ranked above 'HELLO WORLD') was a
+        # direct symptom of that.
+        return chi_squared_score(text, self.lang_freq)
 
     def brute_force_decrypt(self, encrypted_text, max_offset=None, show_all=False):
        # Try all possible offsets to decrypt the message

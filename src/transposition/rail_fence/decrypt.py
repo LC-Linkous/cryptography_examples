@@ -32,7 +32,7 @@ class decrypt:
             self.dictionary = list(dictionary)
         
         # Common letter frequencies (for scoring)
-        if lang_freq == None:
+        if lang_freq is None:
             # English default
             self.lang_freq = {
                 'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,

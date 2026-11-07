@@ -52,9 +52,9 @@ Claude AI was used to generate the test cases for the **public** version of this
 ## What is Encryption?
 
 <p align="center">
-        <img src="media/fig_encryption.png" alt="A message encrypted using a public key and decrypted using a private key" height="200">
+        <img src="media/fig_encryption.png" alt="A message encrypted with a key and decrypted with the matching key" height="200">
 </p>
-   <p align="center">A message encrypted using a public key and decrypted using a private key </p>
+   <p align="center">A message encrypted with a key and decrypted with the matching key (here: a Caesar shift) </p>
 
 
 Encryption is a method of making transmitted information unreadable to anyone who is not the intended sender or recipient(s). These transmissions can be text, images, raw data, or any kind of information that can be digitized and sent between at least two points. 
@@ -95,6 +95,33 @@ pip install pandas numpy
 
 ```
 This is an example for if you've had a difficult time with the requirements.txt file. Sometimes libraries are packaged together.
+
+## Quick Start
+
+```bash
+git clone https://github.com/LC-Linkous/cryptography_examples.git
+cd cryptography_examples
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Every demo script is run from inside its own folder:
+cd src/substitution/caesar
+python encrypt_test.py
+python decrypt_test.py
+```
+
+### Running the tests
+
+The `*_test.py` scripts are *demonstrations*: they print, they do not assert.
+The `tests/` directory holds a small `pytest` suite that checks the things
+that must be true for the demos to be trustworthy (round trips, the from-scratch
+hashes matching `hashlib`/`zlib`, the Caesar brute-forcer ranking the real
+plaintext first). It runs on every push via GitHub Actions.
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
 ## Implementation
 
@@ -262,6 +289,8 @@ This section discusses the general operation of the algorithms in terms of the i
 1. **Caesar Cipher**
 
 This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Caesar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency.
+
+The scorer lives in `src/common/english_score.py` and is the chi-squared statistic over all 26 letters. An earlier version only summed the error over letters *present* in the candidate, which is why the sample output below ranks the garbage `aXeeh phkeW` above `HELLO WORLD`: a candidate with few distinct letters was penalized less than real English. (The output is kept as a teaching moment: a scorer is only as good as what it measures. Re-running `decrypt_test.py` now puts the real plaintext first.)
 
 * `encrypt.py` - the encryption class, standardized input.
 * `decrypt.py` - the brute force decryption class, standardized input.
