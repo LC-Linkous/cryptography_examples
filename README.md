@@ -12,6 +12,10 @@ Each encryption method has its own folder with the following:
 
 These four files are the core demonstration of each algorithm. In some directories there may be additional files such as `decrypt_improved.py` or `decrypt_improved_test.py`. The contents of additional files are discussed in the [Discussion Section](#some-algorithm-discussion) under their specific algorithm.
 
+Two (new, Nov. 2026) directories sit alongside `./src`:
+* `./tests` - a small `pytest` suite that *asserts* the properties the per-folder `*_test.py` scripts only print: encrypt/decrypt round trips, the from-scratch hashes matching Python's `hashlib`/`zlib`, and the Caesar brute-forcer ranking the real plaintext first. It runs automatically on every push (see [Running the Tests](#running-the-tests)). Letter-frequency scoring shared by the brute-force `decrypt.py` files lives in `./src/common` so there is one copy to reason about.
+* `./demos` - standalone, cross-cutting demonstrations that connect several algorithms at once (block-cipher modes, password salting, hybrid encryption, key reuse, hash collisions, a key-exchange MITM, a timing side-channel). These are a level *above* the per-cipher folders; see [Demonstrations](#demonstrations).
+
 
 Claude AI was used to generate the test cases for the **public** version of this repo, in order to not give away any hints for the group assignments or demos. Claude AI also inserts extra commentary and examples, which is pretty fun for creating samples. `NOTE:` these test examples are very different in format from the PPT slides and demos, and shouldn't be used as a starting point for the group work. The `encrypt` and `decrypt` classes are currently 1:1 with the demos. For details on AI Usage and how it performed, see the [Notes on AI as an Instructional Tool](#notes-on-ai-as-an-instructional-tool)
 
@@ -22,7 +26,10 @@ Claude AI was used to generate the test cases for the **public** version of this
 ## Table of Contents
 * [What is Encryption?](#what-is-encryption)
 * [Requirements](#requirements)
+* [Quick Start](#quick-start)
+    * [Running the Tests](#running-the-tests)
 * [Implementation](#implementation)
+* [Demonstrations](#demonstrations)
 * [Included in this Repository](#included-in-this-repository)
     * [Substitution Ciphers](#substitution-ciphers)
     * [Transposition Ciphers](#transposition-ciphers)
@@ -96,6 +103,14 @@ pip install pandas numpy
 ```
 This is an example for if you've had a difficult time with the requirements.txt file. Sometimes libraries are packaged together.
 
+To also run the test suite, install the development requirements (this pulls in `pytest` on top of the runtime dependencies):
+
+```python
+pip install -r requirements-dev.txt
+```
+
+The `demos/` scripts need **no** dependencies at all — they are standard-library only.
+
 ## Quick Start
 
 ```bash
@@ -110,7 +125,7 @@ python encrypt_test.py
 python decrypt_test.py
 ```
 
-### Running the tests
+### Running the Tests
 
 The `*_test.py` scripts are *demonstrations*: they print, they do not assert.
 The `tests/` directory holds a small `pytest` suite that checks the things
@@ -136,6 +151,24 @@ Each encryption method has its own folder with the following:
 In some repositories there may be a `decrypt_improved.py` and matching `decrypt_improved_test.py`, these are more detailed in their brute force attempts, but may only be more accurate or `improved` under specific conditions. They are considered experimental and for educational purposes outside of the main demonstration. 
 
 Regarding non-English dictionaries, there are some hooks for that integration, but it is not fully implemented into these samples to keep them simple. A directory of `default_dictionaries` has been included for generating different ASCII and Unicode dictionaries, but this is exploratory. They're also AI generated, which makes them fun to play with, but not particularly useful at this time. 
+
+
+
+## Demonstrations
+
+Where each `./src` folder teaches **one** algorithm, the `./demos` directory sits a level up and shows what happens when algorithms are *combined*, *misused*, or *compared* — the ideas that only surface once there is more than one primitive in hand. Each demo is a single self-contained file, standard-library only (no `pandas`/`numpy`, no `src` imports), so any one can be dropped into a lecture or an assignment on its own. Run one directly, e.g. `python demos/demo_ecb_vs_cbc.py`.
+
+| demo | one-line idea | builds on |
+|------|---------------|-----------|
+| `demo_ecb_vs_cbc.py` | A good block cipher isn't enough — the *mode* leaks structure (the "ECB penguin"). | Block / Feistel |
+| `demo_password_hashing.py` | Storing a hash isn't enough — salt kills precomputed tables, a slow KDF makes guessing expensive. | Hashing |
+| `demo_hybrid_encryption.py` | How RSA + a stream cipher + a MAC combine into the TLS/PGP/age pattern. | RSA, Stream, SHA-256 |
+| `demo_two_time_pad.py` | The one-time pad is perfect used *once*; reuse the key and both messages fall out by crib-dragging. | OTP, ChaCha20 |
+| `demo_birthday_collisions.py` | Collisions cost ~2^(n/2), not 2^n — which is exactly how MD5 and SHA-1 fell. | MD5, SHA-1, SHA-256 |
+| `demo_ecdh_mitm.py` | A shared secret is not a verified partner: unauthenticated ECDH falls to a man-in-the-middle, and a signature stops it. | ECDH |
+| `demo_timing_attack.py` | A short-circuiting `==` on a secret leaks it through the clock, one byte at a time; `hmac.compare_digest` doesn't. | Hashing (MAC/token checks) |
+
+A few notes carried in `demos/README.md` for course use: several demos use a deliberately simple stand-in primitive (a toy Feistel, a SHA-256 keystream, textbook RSA, a compact Schnorr signature) in place of a vetted one — the *assembly* is faithful, the primitive is not secure, matching the "the math being right is not the same as the system being secure" teaching note on RSA. They were also written independently of the non-public group assignments, so if an assignment asks students to discover one of these ideas themselves (e.g. the ECB weakness), keep that demo out of the students' copy until after. Most run instantly; `demo_timing_attack.py` takes ~15-20s because it actually measures timing.
 
 
 
