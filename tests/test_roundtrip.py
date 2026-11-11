@@ -20,7 +20,7 @@ def test_caesar_roundtrip_and_autobreak(load_module, opts):
     assert ct == "KHOOR ZRUOG"
 
     dec = load_module('substitution/caesar/decrypt.py').decrypt(UPPER)
-    # np.roll(+3) on encrypt is undone by np.roll(-3) on decrypt.
+    # np.roll(-3) on encrypt (A->D) is undone by np.roll(+3) on decrypt.
     assert dec.decrypt_with_offset(ct, 3) == "HELLO WORLD"
     # The brute-force ranking must now put the real plaintext first.
     best = dec.brute_force_decrypt("WKH TXLFN EURZQ IRA MXPSV RYHU WKH ODCB GRJ")[0]

@@ -52,9 +52,9 @@ class decrypt:
 
         # Create decryption dictionary (reverse the encryption process)
         if self.wrap_separately:
-            cipher_dict = self._create_advanced_cipher_dict(-offset)
+            cipher_dict = self._create_advanced_cipher_dict(offset)
         else:
-            cipher_dict = np.roll(self.original_dictionary, -offset)
+            cipher_dict = np.roll(self.original_dictionary, offset)
         
         result = []
         for char in encrypted_text:

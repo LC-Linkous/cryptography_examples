@@ -245,3 +245,8 @@ class hash:
             'rounds': 64,
             'output_format': self.output_format,
             'reversible': False}
+
+
+# Alias so this module matches the `hashfn` class name used by the other
+# hashing modules (md5, sha1, crc32, merkle_damgard).
+hashfn = hash

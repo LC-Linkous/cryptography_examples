@@ -51,7 +51,7 @@ class encrypt:
             values = np.array(values)
        
         # Create shifted array using modular arithmetic
-        shifted_values = np.roll(values, self.offset)
+        shifted_values = np.roll(values, -self.offset)
        
         # Set Dictionary
         self.cipher_dict = shifted_values
@@ -76,14 +76,14 @@ class encrypt:
             if np.any(uppercase_mask):
                 uppercase_chars = values[uppercase_mask]
                 uppercase_indices = np.where(uppercase_mask)[0]
-                shifted_uppercase = np.roll(uppercase_chars, self.offset)
+                shifted_uppercase = np.roll(uppercase_chars, -self.offset)
                 shifted_values[uppercase_indices] = shifted_uppercase
             
             # Shift lowercase separately  
             if np.any(lowercase_mask):
                 lowercase_chars = values[lowercase_mask]
                 lowercase_indices = np.where(lowercase_mask)[0]
-                shifted_lowercase = np.roll(lowercase_chars, self.offset)
+                shifted_lowercase = np.roll(lowercase_chars, -self.offset)
                 shifted_values[lowercase_indices] = shifted_lowercase
             
             # Handle other characters (non-alphabetic)
@@ -91,11 +91,11 @@ class encrypt:
             if np.any(other_mask):
                 other_chars = values[other_mask]
                 other_indices = np.where(other_mask)[0]
-                shifted_other = np.roll(other_chars, self.offset)
+                shifted_other = np.roll(other_chars, -self.offset)
                 shifted_values[other_indices] = shifted_other
         else:
             # Simple shift of entire array (fallback to basic method)
-            shifted_values = np.roll(values, self.offset)
+            shifted_values = np.roll(values, -self.offset)
         
         # Set Dictionary
         self.cipher_dict = shifted_values
