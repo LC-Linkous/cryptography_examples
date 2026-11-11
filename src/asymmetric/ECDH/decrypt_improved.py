@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/asymmetric/ecdh/decrypt_improved.py'
+#   './cryptography_examples/src/asymmetric/ECDH/decrypt_improved.py'
 #   ECDH smart attack (TEACHING-SIZED curve) - Baby-Step Giant-Step
 #
 #   Companion to decrypt.py, in the same spirit as RSA's decrypt_improved:

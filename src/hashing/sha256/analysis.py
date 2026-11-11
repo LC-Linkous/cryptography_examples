@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 import time
 
-from hash import hash
+from hash import hashfn
 
 np.seterr(all='raise')
 
@@ -43,7 +43,7 @@ class analysis:
             self.show_steps = opt_df['SHOW_STEPS'][0]
 
         # Use the real hash implementation for all analysis.
-        self.hasher = hash(None, pd.DataFrame({
+        self.hasher = hashfn(None, pd.DataFrame({
             'SHOW_STEPS': [False], 'OUTPUT_FORMAT': ['BYTES']
         }))
 
@@ -194,3 +194,17 @@ class analysis:
             'preimage_resistance_bits': 256,
             'collision_resistance_bits': 128,
             'avalanche_target_pct': 50}
+
+
+if __name__ == '__main__':
+    # Run all of the demonstrations. The preimage search uses a small
+    # target (8 zero bits, ~256 guesses on average) so it finishes quickly
+    # with this pure-Python SHA-256; raise prefix_bits to watch it slow down.
+    demo = analysis()
+    demo.demonstrate_avalanche()
+    print()
+    demo.demonstrate_sensitivity()
+    print()
+    demo.demonstrate_preimage_cost(prefix_bits=8)
+    print()
+    demo.demonstrate_collision_cost()

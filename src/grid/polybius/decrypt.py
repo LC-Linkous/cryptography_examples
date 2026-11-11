@@ -14,7 +14,13 @@ import numpy as np
 import pandas as pd
 import random
 import re
-from collections import Counter
+import os
+import sys
+
+# Allow 'from common...' whether this file is run from its own folder (the
+# repo convention) or imported from the tests/ directory.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+from common.english_score import ENGLISH_FREQ, english_score
 np.seterr(all='raise')
 
 class decrypt:
@@ -48,13 +54,7 @@ class decrypt:
             raise ValueError("Grid size must be 5 or 6")
         
         # Common English letter frequencies for scoring
-        self.lang_freq = {
-            'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,
-            'S': 6.3, 'H': 6.1, 'R': 6.0, 'D': 4.3, 'L': 4.0, 'C': 2.8,
-            'U': 2.8, 'M': 2.4, 'W': 2.4, 'F': 2.2, 'G': 2.0, 'Y': 2.0,
-            'P': 1.9, 'B': 1.3, 'V': 1.0, 'K': 0.8, 'J': 0.15, 'X': 0.15,
-            'Q': 0.10, 'Z': 0.07
-        }
+        self.lang_freq = dict(ENGLISH_FREQ)
         
         # Prepare the character set
         self.prepare_character_set()
@@ -69,10 +69,10 @@ class decrypt:
             # 5x5 grid needs exactly 25 characters
             if self.combine_letters == 'IJ':
                 # Traditional: combine I and J
-                chars = [chr(i) for i in range(65, 73)] + [chr(i) for i in range(75, 91)]  # A-H, K-Z
+                chars = [chr(i) for i in range(65, 74)] + [chr(i) for i in range(75, 91)]  # A-I, K-Z (J -> I)
             elif self.combine_letters == 'UV':
                 # Alternative: combine U and V
-                chars = [chr(i) for i in range(65, 85)] + [chr(i) for i in range(86, 91)]  # A-T, W-Z
+                chars = [chr(i) for i in range(65, 86)] + [chr(i) for i in range(87, 91)]  # A-U, W-Z (V -> U)
             else:
                 # Use first 25 letters
                 chars = [chr(i) for i in range(65, 90)]  # A-Y
@@ -199,6 +199,16 @@ class decrypt:
         # attempt to decrypt the emssage using the polybius squrare
         # Create grid with specified parameters
         self.create_cipher_grid(keyword, random_seed)
+        # encrypt_message() joins every token with the separator, so a space
+        # between words shows up as separator + ' ' + separator. Split on
+        # that first so word breaks survive the round trip.
+        word_break = f"{self.separator} {self.separator}" if self.separator else None
+        if word_break and word_break in encrypted_text:
+            return ' '.join(self._decode_tokens(word) for word in encrypted_text.split(word_break))
+        return self._decode_tokens(encrypted_text)
+
+
+    def _decode_tokens(self, encrypted_text):
         
         # Split by separator or parse coordinate pairs
         coordinate_pairs = []
@@ -245,20 +255,11 @@ class decrypt:
         clean_text = re.sub(r'[^A-Za-z]', '', text.upper())
         
         if len(clean_text) == 0:
-            return 0
-        
-        # Count letter frequencies
-        letter_counts = Counter(clean_text)
-        total_letters = len(clean_text)
-        
-        # Calculate score based on how close frequencies are to English
-        score = 0
-        for letter, count in letter_counts.items():
-            observed_freq = (count / total_letters) * 100
-            expected_freq = self.lang_freq.get(letter, 0)
-            
-            # Use negative squared difference (closer to expected = higher score)
-            score -= (observed_freq - expected_freq) ** 2
+            return float('-inf')
+
+        # Shared chi-squared over ALL letters, per letter (common/english_score.py):
+        # letters English expects but the candidate lacks now count against it.
+        score = english_score(text, self.lang_freq)
         
         return score
 

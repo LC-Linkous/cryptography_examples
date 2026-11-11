@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/asymmetric/ecdh/decrypt.py'
+#   './cryptography_examples/src/asymmetric/ECDH/decrypt.py'
 #   ECDH attacker (TEACHING-SIZED curve) - naive discrete log
 #
 #   Companion to the symmetric decrypt classes and to RSA's decrypt.py.

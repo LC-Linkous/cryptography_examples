@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/stream/rc4/decrypt_test.py'
+#   './cryptography_examples/src/stream/RC4/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun. 
 #   In order to use the actual encryption class it needed some prompting.
 

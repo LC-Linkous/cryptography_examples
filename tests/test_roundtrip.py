@@ -42,6 +42,34 @@ def test_vigenere_roundtrip(load_module, opts):
     assert dec.decrypt_message(ct) == "ATTACKATDAWN"
 
 
+# --------------------------------------------------------------------- grid
+
+@pytest.mark.parametrize("combine, merged_from, merged_to", [("IJ", "J", "I"), ("UV", "V", "U")])
+def test_polybius_5x5_grid_holds_25_letters(load_module, opts, combine, merged_from, merged_to):
+    enc = load_module('grid/polybius/encrypt.py').encrypt(None, opts(COMBINE_LETTERS=combine))
+    enc.create_cipher_grid()
+    cells = [c for row in enc.cipher_grid for c in row]
+    assert '' not in cells and len(set(cells)) == 25
+    assert merged_to in cells and merged_from not in cells
+
+
+@pytest.mark.parametrize("kw", [{}, {"KEYWORD": "ZEBRA"}, {"GRID_SIZE": 6}])
+def test_polybius_roundtrip_keeps_letters_and_word_breaks(load_module, opts, kw):
+    pt = "BIG QUIZ VEXING WORDS"
+    enc = load_module('grid/polybius/encrypt.py').encrypt(None, opts(**kw))
+    ct = enc.encrypt_message(pt)
+    assert '[' not in ct
+    assert enc.decrypt_message(ct) == pt
+
+    dec = load_module('grid/polybius/decrypt.py').decrypt(None, opts(**kw))
+    assert dec.decrypt_message(ct, kw.get("KEYWORD"), 42) == pt
+
+
+def test_playfair_wikipedia_example(load_module, opts):
+    enc = load_module('grid/playfair/encrypt.py').encrypt(None, opts(KEYWORD='PLAYFAIR EXAMPLE'))
+    assert enc.encrypt_message("HIDE THE GOLD IN THE TREE STUMP") == "BMODZBXDNABEKUDMUIXMMOUVIF"
+
+
 # ------------------------------------------------------------------- stream
 
 def test_otp_xor_roundtrip_and_key_length_rule(load_module, opts):
@@ -54,6 +82,29 @@ def test_otp_xor_roundtrip_and_key_length_rule(load_module, opts):
     short = load_module('stream/otp/encrypt.py').encrypt(None, opts(MODE='xor', KEY='0a0b'))
     with pytest.raises(ValueError):
         short.encrypt_message("longer than two bytes")
+
+
+# RFC 8439 section 2.4.2: the "sunscreen" known-answer vector. It uses
+# counter=1 and a 114-byte message (two blocks), so it also checks that the
+# keystream starts at COUNTER and advances one block at a time.
+RFC8439_KEY = bytes(range(32))
+RFC8439_NONCE = bytes.fromhex("000000000000004a00000000")
+RFC8439_PT = ("Ladies and Gentlemen of the class of '99: If I could offer you only one "
+              "tip for the future, sunscreen would be it.")
+RFC8439_CT = ("6e2e359a2568f98041ba0728dd0d6981e97e7aec1d4360c20a27afccfd9fae0b"
+              "f91b65c5524733ab8f593dabcd62b3571639d624e65152ab8f530c359f0861d8"
+              "07ca0dbf500d6a6156a38e088a22b65e52bc514d16ccf806818ce91ab7793736"
+              "5af90bbf74a35be6b40b8eedf2785e42874d")
+
+
+def test_chacha20_matches_rfc8439(load_module, opts):
+    o = opts(KEY=RFC8439_KEY, NONCE=RFC8439_NONCE, COUNTER=1, OUTPUT_FORMAT='HEX')
+    ct = load_module('stream/chacha20/encrypt.py').encrypt(None, o).encrypt_message(RFC8439_PT)
+    assert ct.replace(' ', '').lower() == RFC8439_CT
+
+    dec = load_module('stream/chacha20/decrypt.py').decrypt(None, opts(
+        KEY=RFC8439_KEY, NONCE=RFC8439_NONCE, COUNTER=1, INPUT_FORMAT='HEX'))
+    assert dec.decrypt_message(RFC8439_CT) == RFC8439_PT
 
 
 # --------------------------------------------------------------- asymmetric

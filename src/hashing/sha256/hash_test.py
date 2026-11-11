@@ -16,7 +16,7 @@
 
 import pandas as pd
 
-from hash import hash
+from hash import hashfn
 
 
 print("=== SHA-256 Hash Function Educational Example ===")
@@ -40,7 +40,7 @@ for config in configurations:
     print('='*70)
 
     options = pd.DataFrame(config)
-    hasher = hash(None, options)
+    hasher = hashfn(None, options)
 
     hasher.show_hash_state()
 
@@ -77,7 +77,7 @@ known_vectors = [
      "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"),
 ]
 
-verifier = hash(None, pd.DataFrame({'OUTPUT_FORMAT': ['HEX'], 'SHOW_STEPS': [False]}))
+verifier = hashfn(None, pd.DataFrame({'OUTPUT_FORMAT': ['HEX'], 'SHOW_STEPS': [False]}))
 all_pass = True
 for text, expected in known_vectors:
     got = verifier.hash_message(text)

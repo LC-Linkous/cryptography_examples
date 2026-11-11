@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grid/adfgvx/encrypt_test.py'
+#   './cryptography_examples/src/grid/ADFGVX/encrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun. 
 #   Claude also added some additional commentary, which is neat. 
 #

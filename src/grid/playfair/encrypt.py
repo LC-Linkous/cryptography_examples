@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grids/playfair/encrypt.py'
+#   './cryptography_examples/src/grid/playfair/encrypt.py'
 #   Playfair cipher encryption class
 #
 #   The Playfair cipher (Charles Wheatstone, 1854; promoted by Lord

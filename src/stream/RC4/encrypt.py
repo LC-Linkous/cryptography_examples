@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/stream/rc4/encrypt.py'
+#   './cryptography_examples/src/stream/RC4/encrypt.py'
 #   RC4 stream cipher encryption class
 #       
 #

@@ -18,6 +18,12 @@ import hashlib
 import re
 from collections import Counter
 from secrets import token_bytes
+import os
+
+# Allow 'from common...' whether this file is run from its own folder (the
+# repo convention) or imported from the tests/ directory.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+from common.english_score import ENGLISH_FREQ, english_score
 np.seterr(all='raise')
 
 class decrypt:
@@ -59,13 +65,7 @@ class decrypt:
         self.constants = b"expand 32-byte k"
         
         # Common English letter frequencies for scoring
-        self.lang_freq = {
-            'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,
-            'S': 6.3, 'H': 6.1, 'R': 6.0, 'D': 4.3, 'L': 4.0, 'C': 2.8,
-            'U': 2.8, 'M': 2.4, 'W': 2.4, 'F': 2.2, 'G': 2.0, 'Y': 2.0,
-            'P': 1.9, 'B': 1.3, 'V': 1.0, 'K': 0.8, 'J': 0.15, 'X': 0.15,
-            'Q': 0.10, 'Z': 0.07
-        }
+        self.lang_freq = dict(ENGLISH_FREQ)
 
     def parse_ciphertext(self, ciphertext_string):
         """Parse ciphertext from various input formats"""
@@ -305,13 +305,16 @@ class decrypt:
             print(f"Requested length: {length} bytes")
             print(f"Blocks needed: {blocks_needed}")
         
+        start_counter = self.current_counter
         for block_num in range(blocks_needed):
-            block = self.chacha20_block(self.current_counter - blocks_needed + block_num)
+            block = self.chacha20_block(start_counter + block_num)
             keystream += block
             
             if self.show_steps and block_num < 1:
                 print(f"Block {block_num}: {block[:16].hex().upper()}... ({len(block)} bytes)")
         
+        self.current_counter = start_counter + blocks_needed
+
         # Truncate to requested length
         keystream = keystream[:length]
         
@@ -375,26 +378,17 @@ class decrypt:
         # Remove non-alphabetic characters and convert to uppercase
 
         if not isinstance(text, str):
-            return -1000  # Penalize non-text results
+            return float('-inf')  # Penalize non-text results
         
         # Remove non-alphabetic characters and convert to uppercase
         clean_text = re.sub(r'[^A-Za-z]', '', text.upper())
         
         if len(clean_text) == 0:
-            return -1000
-        
-        # Count letter frequencies
-        letter_counts = Counter(clean_text)
-        total_letters = len(clean_text)
-        
-        # Calculate score based on closeness to English frequencies
-        score = 0
-        for letter, count in letter_counts.items():
-            observed_freq = (count / total_letters) * 100
-            expected_freq = self.lang_freq.get(letter, 0)
-            
-            # Use negative squared difference (closer to expected = higher score)
-            score -= (observed_freq - expected_freq) ** 2
+            return float('-inf')
+
+        # Shared chi-squared over ALL letters, per letter (common/english_score.py):
+        # letters English expects but the candidate lacks now count against it.
+        score = english_score(text, self.lang_freq)
         
         # Bonus for common English words
         common_words = ['THE', 'AND', 'TO', 'OF', 'A', 'IN', 'IS', 'IT', 'YOU', 'THAT']

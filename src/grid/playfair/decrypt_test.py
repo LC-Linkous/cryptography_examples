@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grids/playfair/decrypt_test.py'
+#   './cryptography_examples/src/grid/playfair/decrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #
 #   Shows (1) legitimate decryption with the keyword, and (2) the

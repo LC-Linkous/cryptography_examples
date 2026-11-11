@@ -21,14 +21,9 @@ print("\n=== CREATING PROPER TEST CASES ===")
 # Import the encrypt class to generate proper test cases
 # For this demo, we'll manually create the expected mappings
 
-# Standard alphabetical grid (A-H,K-Z): 5x5
-standard_grid = [
-    ['A', 'B', 'C', 'D', 'E'],
-    ['F', 'G', 'H', 'K', 'L'],
-    ['M', 'N', 'O', 'P', 'Q'],
-    ['R', 'S', 'T', 'U', 'V'],
-    ['W', 'X', 'Y', 'Z', '']
-]
+# Standard alphabetical grid (I and J share a cell): 5x5
+standard_letters = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+standard_grid = [list(standard_letters[r*5:(r+1)*5]) for r in range(5)]
 
 # Create coordinate mapping for standard grid
 standard_coords = {}
@@ -52,14 +47,10 @@ for char in "HELLOWORLD":
 hello_world_cipher = " ".join(hello_world_encrypted)
 print(f"\n'HELLO WORLD' encrypts to: {hello_world_cipher}")
 
-# SECRET keyword grid: S,E,C,R,T,A,B,D,F,G,H,K,L,M,N,O,P,Q,U,V,W,X,Y,Z
-secret_grid = [
-    ['S', 'E', 'C', 'R', 'T'],
-    ['A', 'B', 'D', 'F', 'G'],
-    ['H', 'K', 'L', 'M', 'N'],
-    ['O', 'P', 'Q', 'U', 'V'],
-    ['W', 'X', 'Y', 'Z', '']
-]
+# SECRET keyword grid: the keyword's unique letters (S,E,C,R,T), then the
+# rest of the alphabet in order, again with I/J sharing a cell
+secret_letters = "SECRT" + "".join(c for c in standard_letters if c not in "SECRT")
+secret_grid = [list(secret_letters[r*5:(r+1)*5]) for r in range(5)]
 
 secret_coords = {}
 for row in range(5):
@@ -136,20 +127,21 @@ for test_case in corrected_test_cases:
     print(f"Auto-decrypt match: {auto_result == test_case['expected_plaintext']}")
 
 print(f"\n{'='*60}")
-print("DEMONSTRATION WITH ORIGINAL TEST CASES")
+print("DEMONSTRATION WITH HAND-WRITTEN TEST CASES")
 print('='*60)
 
-# Test with the original (incorrect) test cases to show what they actually decrypt to
+# Ciphertexts written by hand against the standard textbook grid
+# (A-E / F-K / L-P / Q-U / V-Z, with I and J sharing 24)
 original_test_cases = [
     {
-        'name': 'Original Standard Grid Message',
-        'encrypted': '23 15 31 31 34 44 34 42 31 14',
+        'name': 'Standard Grid Message (HELLO WORLD)',
+        'encrypted': '23 15 31 31 34 52 34 42 31 14',
         'config': {'keyword': None, 'grid_size': 5, 'number_base': 1, 'separator': ' '}
     },
     {
-        'name': 'Original Keyword Grid Message', 
+        'name': 'Standard Grid Message (SECRET)',
         'encrypted': '43 15 13 42 15 44',
-        'config': {'keyword': 'SECRET', 'grid_size': 5, 'number_base': 1, 'separator': ' '}
+        'config': {'keyword': None, 'grid_size': 5, 'number_base': 1, 'separator': ' '}
     }
 ]
 
@@ -176,7 +168,7 @@ print("UNKNOWN MESSAGE DECRYPTION")
 print('='*60)
 
 # Test with unknown message
-unknown_message = "41 34 31 54 12 24 45 43 43 15 13 42 15 44"
+unknown_message = "35 34 31 54 12 24 45 43 43 15 13 42 15 44"
 
 print(f"Unknown encrypted message: {unknown_message}")
 
@@ -229,8 +221,8 @@ KEY FEATURES:
 - Detailed ciphertext analysis
 
 DEBUGGING NOTES:
-- The original test cases had incorrect plaintext expectations
-- '23 15 31 31 34' decrypts to 'GEMMQ' with standard alphabetical grid
-- '43 15 13 42 15 44' decrypts to 'QTCPTU' with SECRET keyword grid
+- An earlier version of the 5x5 grid left out BOTH I and J (24 letters and
+  a blank cell), so correct textbook ciphertexts like '23 15 31 31 34'
+  decoded to the wrong letters. The grid now holds I/J in one cell.
 - Always verify test cases by encrypting the expected plaintext first
 """)

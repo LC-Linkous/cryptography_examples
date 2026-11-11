@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grids/playfair/encrypt_test.py'
+#   './cryptography_examples/src/grid/playfair/encrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun.
 #   Claude also added some additional commentary, which is neat.
 #

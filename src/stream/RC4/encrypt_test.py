@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/stream/rc4/encrypt_test.py'
+#   './cryptography_examples/src/stream/RC4/encrypt_test.py'
 #   Some (mostly) AI generated test cases, for fun. 
 #   Claude also added some additional commentary, which is neat. 
 #

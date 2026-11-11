@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grid/adfgvx/encrypt.py'
+#   './cryptography_examples/src/grid/ADFGVX/encrypt.py'
 #   ADFGVX cipher encryption class
 #       
 #

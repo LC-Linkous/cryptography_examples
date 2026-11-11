@@ -89,9 +89,9 @@ class encrypt:
             # Pad with zeros
             return nonce_bytes + b'\x00' * (12 - len(nonce_bytes))
         else:
-            # Use SHA-256 to get the key down to 12 bytes
-            # This uses an actual library to perform (real) cryptographic 
-            # hashing to convert a key that's too long into exactly 32 bytes
+            # Use SHA-256 to get the nonce down to 12 bytes
+            # This uses an actual library to perform (real) cryptographic
+            # hashing, then keeps the first 12 bytes of the digest
             return hashlib.sha256(nonce_bytes).digest()[:12]
 
 
@@ -303,13 +303,16 @@ class encrypt:
             print(f"Requested length: {length} bytes")
             print(f"Blocks needed: {blocks_needed}")
         
+        start_counter = self.current_counter
         for block_num in range(blocks_needed):
-            block = self.chacha20_block(self.current_counter - blocks_needed + block_num)
+            block = self.chacha20_block(start_counter + block_num)
             keystream += block
             
             if self.show_steps and block_num < 2:
                 print(f"Block {block_num}: {block[:16].hex().upper()}... ({len(block)} bytes)")
         
+        self.current_counter = start_counter + blocks_needed
+
         # Truncate to requested length
         keystream = keystream[:length]
         

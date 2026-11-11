@@ -17,6 +17,18 @@
 #   The fix is the textbook chi-squared statistic over ALL 26 letters:
 #   missing letters (expected but absent) now count against a candidate.
 #
+#   TWO ENTRY POINTS
+#   chi_squared_score() - the raw statistic. Use it when every candidate
+#       has the same letters (e.g. the 26 Caesar shifts of one message).
+#   english_score()     - the same statistic per letter, minus a penalty
+#       for non-letter characters. Use it when candidates differ in length
+#       or may be undecodable bytes (Bacon, grids, stream ciphers). The
+#       decrypt classes use this one and add their own word/bigram bonuses.
+#
+#   Frequency alone cannot rank TRANSPOSITION candidates (rail fence):
+#   rearranging letters leaves the counts unchanged, so every candidate
+#   scores the same and only the word/bigram bonuses decide.
+#
 #   Author(s): Lauren Linkous
 ##--------------------------------------------------------------------\
 
@@ -61,6 +73,34 @@ def chi_squared_score(text, lang_freq=None):
         observed = counts.get(letter, 0)
         score -= (observed - expected) ** 2 / expected
     return score
+
+
+# How much a candidate loses for each non-letter character (as a share of
+# its non-space characters). Decrypting with a wrong key often produces
+# bytes that print as digits, hex or symbols with only a few stray letters;
+# without this, "3E4A" has fewer letters to be wrong about than "HELLO".
+NONLETTER_PENALTY = 10.0
+
+
+def english_score(text, lang_freq=None):
+    """Length-independent score for comparing candidates of DIFFERENT lengths.
+
+    chi_squared_score() grows with the number of letters, which is fine
+    when every candidate has the same number of letters (Caesar shifts of one
+    ciphertext) but unfair when they do not (Bacon symbol guesses, wrong
+    stream-cipher keys, grid guesses that leave coordinates undecoded).
+    Dividing by the letter count gives the average error per letter, and
+    the non-letter penalty stops mostly-garbage candidates from winning.
+    Scaled by 100 so word/bigram bonuses in the decrypt classes stay small
+    by comparison. HIGHER means more English-like.
+    """
+    n = len(letters_only(text))
+    if n == 0:
+        return float('-inf')
+    visible = sum(1 for ch in text if not ch.isspace())
+    nonletter_share = 1.0 - n / visible
+    per_letter = chi_squared_score(text, lang_freq) / n
+    return 100.0 * (per_letter - NONLETTER_PENALTY * nonletter_share)
 
 
 def rank_candidates(candidates, lang_freq=None):

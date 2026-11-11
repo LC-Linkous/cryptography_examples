@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/transposition/block/encrypt.py'
+#   './cryptography_examples/src/block/feistel/encrypt.py'
 #   Simple block cipher encryption class. This is based on the Feistel cipher.
 #       
 #

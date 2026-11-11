@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/asymmetric/rsa/decrypt.py'
+#   './cryptography_examples/src/asymmetric/RSA/decrypt.py'
 #   RSA decryption class (TEXTBOOK RSA - educational only)
 #
 #   This file does TWO things, which is the whole lesson of RSA:

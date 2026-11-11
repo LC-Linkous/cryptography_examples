@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/chacha20/decrypt_test.py'
+#   './cryptography_examples/src/stream/chacha20/decrypt_test.py'
 #   ChaCha20 stream cipher decryption class with real encrypted data
 #       
 #

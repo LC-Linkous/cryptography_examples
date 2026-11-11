@@ -13,7 +13,7 @@ Each encryption method has its own folder with the following:
 These four files are the core demonstration of each algorithm. In some directories there may be additional files such as `decrypt_improved.py` or `decrypt_improved_test.py`. The contents of additional files are discussed in the [Discussion Section](#some-algorithm-discussion) under their specific algorithm.
 
 Two (new, Nov. 2026) directories sit alongside `./src`:
-* `./tests` - a small `pytest` suite that *asserts* the properties the per-folder `*_test.py` scripts only print: encrypt/decrypt round trips, the from-scratch hashes matching Python's `hashlib`/`zlib`, and the Caesar brute-forcer ranking the real plaintext first. It runs automatically on every push (see [Running the Tests](#running-the-tests)). Letter-frequency scoring shared by the brute-force `decrypt.py` files lives in `./src/common` so there is one copy to reason about.
+* `./tests` - a `pytest` suite that *asserts* the properties the per-folder `*_test.py` scripts only print: encrypt/decrypt round trips, known-answer vectors from published examples (RFC 8439 for ChaCha20, Wikipedia's worked examples for the classical ciphers and RC4), the from-scratch hashes matching Python's `hashlib`/`zlib`, and the brute-forcers ranking the real plaintext first. It runs automatically on every push (see [Running the Tests](#running-the-tests)). Letter-frequency scoring shared by the brute-force `decrypt.py` files lives in `./src/common` so there is one copy to reason about.
 * `./demos` - standalone, cross-cutting demonstrations that connect several algorithms at once (block-cipher modes, password salting, hybrid encryption, key reuse, hash collisions, a key-exchange MITM, a timing side-channel). These are a level *above* the per-cipher folders; see [Demonstrations](#demonstrations).
 
 
@@ -88,7 +88,7 @@ The `Hello World!` text in the figure in this section was created using the incl
 
 ## Requirements
 
-This repository was built and tested on Python 3.12. While effort was put into keeping the tools used in the example as generic as possible, at least Python 3.6 is needed in order to run some of the random and pseudo-random number generation functions properly.
+This repository was built on Python 3.12, and the test suite runs on Python 3.10 and 3.12 on every push. Python 3.10 or newer is required; the `numpy`/`pandas` versions in `requirements.txt` do not install on older releases.
 
 ```python
 pandas
@@ -128,10 +128,13 @@ python decrypt_test.py
 ### Running the Tests
 
 The `*_test.py` scripts are *demonstrations*: they print, they do not assert.
-The `tests/` directory holds a small `pytest` suite that checks the things
-that must be true for the demos to be trustworthy (round trips, the from-scratch
-hashes matching `hashlib`/`zlib`, the Caesar brute-forcer ranking the real
-plaintext first). It runs on every push via GitHub Actions.
+The `tests/` directory holds a `pytest` suite that checks the things
+that must be true for the demos to be trustworthy: round trips, the from-scratch
+hashes matching `hashlib`/`zlib`, ChaCha20 matching the RFC 8439 test vector,
+known-answer vectors from published worked examples for the classical ciphers
+and RC4, and the brute-forcers ranking the real plaintext first. Round trips
+alone can't catch a mistake that encrypt and decrypt share, which is why the
+known-answer tests exist. It runs on every push via GitHub Actions.
 
 ```bash
 pip install -r requirements-dev.txt
@@ -323,7 +326,9 @@ This section discusses the general operation of the algorithms in terms of the i
 
 This is one of the easier algorithms to brute force given the limited solution space. The alphabet can only shift left or right, not scramble. A brute force decryption for a Caesar Cipher involves trying every possible combination and then scoring based on English (in this case) letter frequency.
 
-The scorer lives in `src/common/english_score.py` and is the chi-squared statistic over all 26 letters. An earlier version only summed the error over letters *present* in the candidate, which is why the sample output below ranks the garbage `aXeeh phkeW` above `HELLO WORLD`: a candidate with few distinct letters was penalized less than real English. (The output is kept as a teaching moment: a scorer is only as good as what it measures. Re-running `decrypt_test.py` now puts the real plaintext first.)
+The scorer lives in `src/common/english_score.py` and is the chi-squared statistic over all 26 letters. An earlier version only summed the error over letters *present* in the candidate, so a candidate with few distinct letters was penalized less than real English (it once ranked the garbage `aXeeh phkeW` above `HELLO WORLD`). Earlier sample output also mixed upper and lower case (`FOx`, `LAzy`) because the decryptor used a 52-letter A–Z + a–z alphabet on messages encrypted over 26 letters; the decryptor must use the same alphabet as the encryptor.
+
+Notice test case 1 below: even with a correct scorer, `KHOOR ZRUOG` is only 10 letters, and offset 14 (`WTAAD LDGAS`) happens to match English letter frequencies a little better than `HELLO WORLD`. Frequency analysis needs enough text to work, which is why the longer test cases break correctly. (Group question: what extra evidence, such as common words or letter pairs, could rescue the short case?)
 
 * `encrypt.py` - the encryption class, standardized input.
 * `decrypt.py` - the brute force decryption class, standardized input.
@@ -336,15 +341,15 @@ Encryption:
 
 === Encryption Dictionary ===
 Original:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-Encrypted: XYZABCDEFGHIJKLMNOPQRSTUVW
+Encrypted: DEFGHIJKLMNOPQRSTUVWXYZABC
 
 === Encryption Examples ===
-'ABC' -> 'XYZ'
-'HELLO' -> 'EBIIL'
-'WORLD' -> 'TLOIA'
-'HELLO WORLD!' -> 'EBIIL TLOIA!'
-'ABC123' -> 'XYZ123'
-'ZEBRA' -> 'WBYOX'
+'ABC' -> 'DEF'
+'HELLO' -> 'KHOOR'
+'WORLD' -> 'ZRUOG'
+'HELLO WORLD!' -> 'KHOOR ZRUOG!'
+'ABC123' -> 'DEF123'
+'ZEBRA' -> 'CHEUD'
 
 ```
 
@@ -355,44 +360,44 @@ Decryption:
 ============================================================
 TEST CASE 1: 'KHOOR ZRUOG'
 ============================================================
-Trying offsets 0 to 51...
+Trying offsets 0 to 25...
 ============================================================
 
 Top 3 most likely decryptions:
 ============================================================
-1. Offset 16 (Score: -800.8): aXeeh phkeW
-2. Offset 42 (Score: -800.8): AxEEH PHKEw
-3. Offset 20 (Score: -878.3): ebiil tloia
+1. Offset 14 (Score:  -24.6): WTAAD LDGAS
+2. Offset  6 (Score:  -25.0): EBIIL TLOIA
+3. Offset  3 (Score:  -28.4): HELLO WORLD
 
-Most likely decryption: 'aXeeh phkeW'
+Most likely decryption: 'WTAAD LDGAS'
 
 ============================================================
 TEST CASE 2: 'WKH TXLFN EURZQ IRA MXPSV RYHU WKH ODCB GRJ'
 ============================================================
-Trying offsets 0 to 51...
+Trying offsets 0 to 25...
 ============================================================
 
 Top 3 most likely decryptions:
 ============================================================
-1. Offset 23 (Score: -171.8): the quick brown foX jumps over the laZY dog
-2. Offset 49 (Score: -171.8): THE QUICK BROWN FOx JUMPS OVER THE LAzy DOG
-3. Offset 13 (Score: -291.8): jXU gkYSa Rhemd VeN Zkcfi elUh jXU bQPO TeW
+1. Offset  3 (Score: -110.4): THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+2. Offset  9 (Score: -124.8): NBY KOCWE VLIQH ZIR DOGJM IPYL NBY FUTS XIA
+3. Offset 15 (Score: -130.1): HVS EIWQY PFCKB TCL XIADG CJSF HVS ZONM RCU
 
-Most likely decryption: 'the quick brown foX jumps over the laZY dog'
+Most likely decryption: 'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG'
 
 ============================================================
-TEST CASE 3: 'JBHF GUVF VF N GRKF ZRFFNTR'
+TEST CASE 3: 'GUVF VF N GRFG ZRFFNTR'
 ============================================================
-Trying offsets 0 to 51...
+Trying offsets 0 to 25...
 ============================================================
 
 Top 3 most likely decryptions:
 ============================================================
-1. Offset 13 (Score: -495.1): WOUS ThiS iS a TeXS meSSage
-2. Offset 39 (Score: -495.1): wous tHIs Is A tExs MEssAGE
-3. Offset  9 (Score: -596.8): SKQO PdeO eO W PaTO iaOOWca
+1. Offset 13 (Score:  -25.4): THIS IS A TEST MESSAGE
+2. Offset 17 (Score:  -48.0): PDEO EO W PAOP IAOOWCA
+3. Offset 25 (Score:  -88.0): HVWG WG O HSGH ASGGOUS
 
-Most likely decryption: 'WOUS ThiS iS a TeXS meSSage'
+Most likely decryption: 'THIS IS A TEST MESSAGE'
 
 ```
 
@@ -452,14 +457,10 @@ TEST CASE 1: 'AABBBAABAAABABBABABBABBBA'
 
 Top 3 most likely decryptions:
 ================================================================================
-1. Symbols: 'A'/'B' (26-letter) - Score: -1600.8
+1. Symbols: 'A'/'B' (26-letter) - Score: -352.4
    Result: HELLO
 
-2. Symbols: 'B'/'A' (24-letter) - Score: -1728.7
    Result: ASZKKBBBA
-
-3. Symbols: 'B'/'A' (26-letter) - Score: -1815.1
-   Result: YAXJJBBBA
 
 Most likely decryption: 'HELLO'
 
@@ -470,13 +471,13 @@ TEST CASE 2: '100100010000010100010010010011'
 
 Top 3 most likely decryptions:
 ================================================================================
-1. Symbols: '0'/'1' (26-letter) - Score: -813.2
+1. Symbols: '0'/'1' (26-letter) - Score: -124.2
    Result: SECRET
 
-2. Symbols: '0'/'1' (24-letter) - Score: -891.7
+2. Symbols: '0'/'1' (24-letter) - Score: -177.2
    Result: TECSEU
 
-3. Symbols: '1'/'0' (26-letter) - Score: -8343.9
+3. Symbols: '1'/'0' (26-letter) - Score: -1997.7
    Result: 10010001A10100010010010011
 
 Most likely decryption: 'SECRET'
@@ -488,13 +489,13 @@ TEST CASE 3: '....-........-..---..--.-'
 
 Top 3 most likely decryptions:
 ================================================================================
-1. Symbols: '.'/'-' (26-letter) - Score: -1035.9
+1. Symbols: '.'/'-' (26-letter) - Score: -430.3
    Result: BACON
 
-2. Symbols: '.'/'-' (24-letter) - Score: -1186.6
+2. Symbols: '.'/'-' (24-letter) - Score: -581.2
    Result: BACPO
 
-3. Symbols: '-'/'.' (26-letter) - Score: -2957.8
+3. Symbols: '-'/'.' (26-letter) - Score: -9013.1
    Result: ...X....WG-.-
 
 Most likely decryption: 'BACON'
@@ -506,14 +507,14 @@ TEST CASE 4: 'BAABBAABAABAABABAABB'
 
 Top 3 most likely decryptions:
 ================================================================================
-1. Symbols: 'B'/'A' (24-letter) - Score: -1621.6
-   Result: NAYAXABB
+1. Symbols: 'A'/'B' (26-letter) - Score: -228.1
+   Result: TEST
 
-2. Symbols: 'B'/'A' (26-letter) - Score: -1661.4
+2. Symbols: 'B'/'A' (26-letter) - Score: -743.7
    Result: MAWAVABB
 
-3. Symbols: 'A'/'B' (26-letter) - Score: -2078.8
-   Result: TEST
+3. Symbols: 'A'/'B' (24-letter) - Score: -815.7
+   Result: UETU
 
 
 ```
@@ -734,7 +735,7 @@ Detailed analysis of: 'HOLELWRDLO'
 === Detailed Analysis: 2 Rails ===
 Encrypted:  'HOLELWRDLO'
 Decrypted:  'HWORLDELLO'
-Score:      -900.0
+Score:      -223.2
 Text length: 10
 Pattern period: 2
 Rail distribution: {0: 5, 1: 5}
@@ -747,7 +748,7 @@ Rail 1:  W R D L O
 === Detailed Analysis: 3 Rails ===
 Encrypted:  'HOLELWRDLO'
 Decrypted:  'HELLOWORLD'
-Score:      -870.0
+Score:      -193.2
 Text length: 10
 Pattern period: 4
 Rail distribution: {0: 3, 1: 5, 2: 2}
@@ -761,7 +762,7 @@ Rail 2:   L   O
 === Detailed Analysis: 4 Rails ===
 Encrypted:  'HOLELWRDLO'
 Decrypted:  'HLWLREOLDO'
-Score:      -918.0
+Score:      -241.2
 Text length: 10
 Pattern period: 6
 Rail distribution: {0: 2, 1: 3, 2: 3, 3: 2}
@@ -776,7 +777,7 @@ Rail 3:    L     O
 === Detailed Analysis: 5 Rails ===
 Encrypted:  'HOLELWRDLO'
 Decrypted:  'HLWDOLREOL'
-Score:      -913.0
+Score:      -236.2
 Text length: 10
 Pattern period: 8
 Rail distribution: {0: 2, 1: 3, 2: 2, 3: 2, 4: 1}
@@ -908,33 +909,28 @@ Polybius Square (5x5):
 Combined letters: IJ
 Number base: 1 (1-based)
     1  2  3  4  5
- 1  F  U  Y  R  H
- 2  Q  Z  X  G  V
- 3  P  S  K  A  L
- 4  N  D  T  C  B
- 5  W  O  E  M
+ 1  O  U  F  X  Y
+ 2  R  H  Z  K  G
+ 3  Q  A  T  I  P
+ 4  W  M  D  S  C
+ 5  B  V  N  E  L
 
 Coordinate examples:
-  A → 34
-  E → 53
-  M → 54
-  Z → 22
+  A → 32
+  E → 54
+  M → 42
+  Z → 23
 
 Grid Statistics:
   grid_size: 5x5
   total_positions: 25
-  filled_positions: 24
+  filled_positions: 25
   keyword_used: False
   combine_letters: IJ
   number_base: 1
   separator: ' '
 
 === Testing Messages ===
-'HELLO' -> '15 53 35 35 52' -> 'HELLO' (Match: True)
-'HELLO WORLD' -> '15 53 35 35 52   51 52 14 35 42' -> 'HELLOWORLD' (Match: False)
-  Note: J→I substitution expected with IJ combination
-'ATTACK AT DAWN' -> '34 43 43 34 44 33   34 43   42 34 51 41' -> 'ATTACKATDAWN' (Match: False)
-  Note: J→I substitution expected with IJ combination
 
 ================================================================================
 CONFIGURATION 3
@@ -943,31 +939,31 @@ Polybius Square (5x5):
 Combined letters: IJ
 Number base: 0 (0-based)
     0  1  2  3  4
- 0  B  F  C  R  A
- 1  S  E  T  P  O
- 2  K  U  X  W  L
- 3  N  Q  H  Z  M
- 4  D  V  Y  G
+ 0  S  C  B  F  E
+ 1  R  A  O  Q  K
+ 2  W  N  I  Y  V
+ 3  T  M  P  H  Z
+ 4  L  D  U  X  G
 
 Coordinate examples:
-  A → 04
-  E → 11
-  M → 34
-  Z → 33
+  A → 11
+  E → 04
+  M → 31
+  Z → 34
 
 Grid Statistics:
   grid_size: 5x5
   total_positions: 25
-  filled_positions: 24
+  filled_positions: 25
   keyword_used: False
   combine_letters: IJ
   number_base: 0
   separator: '-'
 
 === Testing Messages ===
-'HELLO' -> '32-11-24-24-14' -> 'HELLO' (Match: True)
-'HELLO WORLD' -> '32-11-24-24-14- -23-14-03-24-40' -> 'HELLO WORLD' (Match: True)
-'ATTACK AT DAWN' -> '04-12-12-04-02-20- -04-12- -40-04-23-30' -> 'ATTACK AT DAWN' (Match: True)
+'HELLO' -> '33-04-40-40-12' -> 'HELLO' (Match: True)
+'HELLO WORLD' -> '33-04-40-40-12- -20-12-10-40-41' -> 'HELLO WORLD' (Match: True)
+'ATTACK AT DAWN' -> '11-30-30-11-01-14- -11-30- -41-11-20-21' -> 'ATTACK AT DAWN' (Match: True)
 
 
 ```
@@ -978,13 +974,13 @@ Decryption:
 Standard grid coordinate mapping:
   H → 23
   E → 15
-  L → 25
-  O → 33
-  W → 51
-  R → 41
+  L → 31
+  O → 34
+  W → 52
+  R → 42
   D → 14
 
-'HELLO WORLD' encrypts to: 23 15 25 25 33 51 33 41 25 14
+'HELLO WORLD' encrypts to: 23 15 31 31 34 52 34 42 31 14
 
 SECRET grid coordinate mapping:
   S → 11
@@ -999,11 +995,11 @@ SECRET grid coordinate mapping:
 TEST: Standard Grid - HELLO WORLD
 ============================================================
 === Ciphertext Analysis ===
-Text: 23 15 25 25 33 51 33 41 25 14
+Text: 23 15 31 31 34 52 34 42 31 14
 Length: 29
 Possible separators found: [' ']
 Coordinate pairs found: 10
-Sample pairs: ['23', '15', '25', '25', '33', '51', '33', '41', '25', '14']
+Sample pairs: ['23', '15', '31', '31', '34', '52', '34', '42', '31', '14']
 Row coordinates: 1 to 5
 Col coordinates: 1 to 5
 Likely 1-based numbering
@@ -1017,16 +1013,16 @@ Combined letters: IJ
 Number base: 1 (1-based)
     1  2  3  4  5
  1  A  B  C  D  E
- 2  F  G  H  K  L
- 3  M  N  O  P  Q
- 4  R  S  T  U  V
- 5  W  X  Y  Z
+ 2  F  G  H  I  K
+ 3  L  M  N  O  P
+ 4  Q  R  S  T  U
+ 5  V  W  X  Y  Z
 
 Coordinate examples:
   11 → A
   15 → E
-  31 → M
-  54 → Z
+  32 → M
+  55 → Z
 
 Known decryption: 'HELLOWORLD'
 Expected: 'HELLOWORLD'
@@ -1639,9 +1635,9 @@ ChaCha20 State Information:
   Initialized: False
 
 === Testing Messages ===
-'HELLO' → 050124EBD0
-'HELLO WORLD!' → 050124EBD05543194917D4B7
-'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG' → 190C2D87CE205D15507BD2C4195C4FDFBFC39A61DA088D44F72D7CD10593999D27322AA2766BDC25ED0BEF
+'HELLO' → 5C896FE111
+'HELLO WORLD!' → 5C896FE1117F3F24B62ACF68
+'THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG' → 4084668D0F0A2128AF46C91B4F2A39F24D5496095346EC3A052609DB8A57013AB9E752A5DAE5F3CE18605A
 ```
 
 
@@ -1651,22 +1647,22 @@ Decryption Highlights:
 --- Basic Short Message ---
 Original message: 'HELLO WORLD'
 Message length: 11 characters
-Encrypted: 72BE1AF8C5FB7AC40C7401
+Encrypted: 06E95BD416A4CC54BC3A14
 Ciphertext length: 22 hex characters (11 bytes)
 
 Using base test case: Basic Short Message 'HELLO WORLD'
 Correct parameters: key='TESTKEY', nonce='testnonce', counter=0
 
 --- Testing Wrong Key ---
-With wrong key: '8A31BDEF5664FB892A11AC'
+With wrong key: 'D2915671448B158E320611'
 ❌ Should produce garbage (not original message)
 
 --- Testing Wrong Nonce ---
-With wrong nonce: '14B6B381BCFD98DDCCE7AA'
+With wrong nonce: '1761AF5A61B128FCACBF76'
 ❌ Should produce garbage (not original message)
 
 --- Testing Wrong Counter ---
-With wrong counter: '3C120D609C7FE1DFE20251'
+With wrong counter: '15E30647FECBAB67DE7847'
 ❌ Should produce garbage (not original message)
 
 ```

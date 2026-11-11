@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/grids/playfair/decrypt.py'
+#   './cryptography_examples/src/grid/playfair/decrypt.py'
 #   Playfair cipher decryption class
 #
 #   Two roles, matching the other decrypt classes in this repo:
@@ -25,7 +25,13 @@
 ##--------------------------------------------------------------------\
 
 import numpy as np
-from collections import Counter
+import os
+import sys
+
+# Allow 'from common...' whether this file is run from its own folder (the
+# repo convention) or imported from the tests/ directory.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+from common.english_score import ENGLISH_FREQ, english_score
 
 np.seterr(all='raise')
 
@@ -51,13 +57,7 @@ class decrypt:
 
         # English letter frequencies for scoring brute-force candidates
         # (same table used by the substitution/RC4 decrypt classes).
-        self.lang_freq = {
-            'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,
-            'S': 6.3, 'H': 6.1, 'R': 6.0, 'D': 4.3, 'L': 4.0, 'C': 2.8,
-            'U': 2.8, 'M': 2.4, 'W': 2.4, 'F': 2.2, 'G': 2.0, 'Y': 2.0,
-            'P': 1.9, 'B': 1.3, 'V': 1.0, 'K': 0.8, 'J': 0.15, 'X': 0.15,
-            'Q': 0.10, 'Z': 0.07
-        }
+        self.lang_freq = dict(ENGLISH_FREQ)
 
         # A small keyword dictionary for the demo attack. Tied to the demo
         # use cases (as in the other decrypt classes); extend as desired.
@@ -117,19 +117,15 @@ class decrypt:
 
 
     def calculate_english_score(self, text):
-        # Frequency-based score (negative squared deviation), plus a small
+        # Frequency-based score (shared per-letter chi-squared), plus a small
         # bonus for common English words - identical idea to the other
         # decrypt classes.
         clean = ''.join(ch for ch in text.upper() if ch.isalpha())
         if not clean:
-            return -1e9
-        counts = Counter(clean)
-        total = len(clean)
-        score = 0.0
-        for letter, cnt in counts.items():
-            observed = (cnt / total) * 100
-            expected = self.lang_freq.get(letter, 0)
-            score -= (observed - expected) ** 2
+            return float('-inf')
+        # Shared chi-squared over ALL letters, per letter (common/english_score.py):
+        # letters English expects but the candidate lacks now count against it.
+        score = english_score(text, self.lang_freq)
         common = ['THE', 'AND', 'THAT', 'HAVE', 'FOR', 'NOT', 'WITH',
                   'YOU', 'THIS', 'BUT', 'HIS', 'FROM', 'THEY']
         score += sum(15 for w in common if w in text.upper())

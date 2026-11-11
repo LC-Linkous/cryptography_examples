@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/asymmetric/rsa/encrypt.py'
+#   './cryptography_examples/src/asymmetric/RSA/encrypt.py'
 #   RSA public-key encryption class (TEXTBOOK RSA - educational only)
 #
 #   This is the first ASYMMETRIC example in the repo. Unlike the

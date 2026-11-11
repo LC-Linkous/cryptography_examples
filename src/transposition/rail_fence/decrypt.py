@@ -19,6 +19,13 @@ import pandas as pd
 import string
 from collections import Counter
 import re
+import os
+import sys
+
+# Allow 'from common...' whether this file is run from its own folder (the
+# repo convention) or imported from the tests/ directory.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+from common.english_score import ENGLISH_FREQ, english_score
 
 class decrypt:
     
@@ -34,13 +41,7 @@ class decrypt:
         # Common letter frequencies (for scoring)
         if lang_freq is None:
             # English default
-            self.lang_freq = {
-                'E': 12.7, 'T': 9.1, 'A': 8.2, 'O': 7.5, 'I': 7.0, 'N': 6.7,
-                'S': 6.3, 'H': 6.1, 'R': 6.0, 'D': 4.3, 'L': 4.0, 'C': 2.8,
-                'U': 2.8, 'M': 2.4, 'W': 2.4, 'F': 2.2, 'G': 2.0, 'Y': 2.0,
-                'P': 1.9, 'B': 1.3, 'V': 1.0, 'K': 0.8, 'J': 0.15, 'X': 0.15,
-                'Q': 0.10, 'Z': 0.07
-            }
+            self.lang_freq = dict(ENGLISH_FREQ)
         else:
             self.lang_freq = lang_freq
         
@@ -173,20 +174,14 @@ class decrypt:
         clean_text = re.sub(r'[^A-Za-z]', '', text.upper())
         
         if len(clean_text) == 0:
-            return -1000
+            return float('-inf')
         
-        score = 0
         text_length = len(clean_text)
         
         # 1. Letter frequency analysis
-        letter_counts = Counter(clean_text)
-        total_letters = len(clean_text)
-        
-        for letter, count in letter_counts.items():
-            observed_freq = (count / total_letters) * 100
-            expected_freq = self.lang_freq.get(letter, 0)
-            # Penalize deviation from expected frequency
-            score -= (observed_freq - expected_freq) ** 2
+        # Shared chi-squared over ALL letters, per letter (common/english_score.py):
+        # letters English expects but the candidate lacks now count against it.
+        score = english_score(text, self.lang_freq)
         
         # 2. Common words bonus
         word_bonus = 0

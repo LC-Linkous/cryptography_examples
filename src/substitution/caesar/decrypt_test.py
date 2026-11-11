@@ -14,14 +14,18 @@ from decrypt import decrypt
 
 print("=== Caesar Cipher Brute Force Decryptor ===\n")
 
-# Create brute force decryptor
-decryptor = decrypt()
+# Create brute force decryptor. The test messages below were encrypted over
+# the 26 capital letters, so the decryptor must use the same alphabet. (With
+# the default 52-character A-Z + a-z alphabet, a shift of 3 sends X, Y, Z to
+# lowercase letters, e.g. 'FOx' and 'LAzy'.)
+alphabet = [chr(i) for i in range(65, 91)]  # A-Z
+decryptor = decrypt(alphabet)
 
 # Test with some encrypted messages
 test_cases = [
     "KHOOR ZRUOG",  # "HELLO WORLD" with offset 3
     "WKH TXLFN EURZQ IRA MXPSV RYHU WKH ODCB GRJ",  # "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG" with offset 3
-    "JBHF GUVF VF N GRKF ZRFFNTR",  # "THIS IS A TEST MESSAGE" with offset 13 (ROT13)
+    "GUVF VF N GRFG ZRFFNTR",  # "THIS IS A TEST MESSAGE" with offset 13 (ROT13)
 ]
 
 for i, encrypted_msg in enumerate(test_cases, 1):
@@ -49,6 +53,8 @@ The scoring system:
 
 Limitations:
 - Assumes the original message was in English
-- May struggle with very short messages
+- May struggle with very short messages: 'KHOOR ZRUOG' (HELLO WORLD) has only
+  10 letters, and offset 14 ('WTAAD LDGAS') happens to fit English letter
+  frequencies better. Longer messages like test case 2 break reliably.
 - Won't work if the original dictionary is unknown
 """)

@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   cryptography_examples
-#   './cryptography_examples/src/asymmetric/ecdh/encrypt.py'
+#   './cryptography_examples/src/asymmetric/ECDH/encrypt.py'
 #   Elliptic-Curve Diffie-Hellman key exchange (TEACHING-SIZED curve)
 #
 #   This is the second ASYMMETRIC example, and a companion to RSA.

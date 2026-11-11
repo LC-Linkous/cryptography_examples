@@ -58,10 +58,10 @@ class encrypt:
             # 5x5 grid needs exactly 25 characters
             if self.combine_letters == 'IJ':
                 # Traditional: combine I and J
-                chars = [chr(i) for i in range(65, 73)] + [chr(i) for i in range(75, 91)]  # A-H, K-Z
+                chars = [chr(i) for i in range(65, 74)] + [chr(i) for i in range(75, 91)]  # A-I, K-Z (J -> I)
             elif self.combine_letters == 'UV':
                 # Alternative: combine U and V
-                chars = [chr(i) for i in range(65, 85)] + [chr(i) for i in range(86, 91)]  # A-T, W-Z
+                chars = [chr(i) for i in range(65, 86)] + [chr(i) for i in range(87, 91)]  # A-U, W-Z (V -> U)
             else:
                 # Use first 25 letters
                 chars = [chr(i) for i in range(65, 90)]  # A-Y
@@ -243,6 +243,16 @@ class encrypt:
         if not self.cipher_grid:
             self.create_cipher_grid()
         
+        # encrypt_message() joins every token with the separator, so a space
+        # between words shows up as separator + ' ' + separator. Split on
+        # that first so word breaks survive the round trip.
+        word_break = f"{self.separator} {self.separator}" if self.separator else None
+        if word_break and word_break in encrypted_text:
+            return ' '.join(self._decode_tokens(word) for word in encrypted_text.split(word_break))
+        return self._decode_tokens(encrypted_text)
+
+
+    def _decode_tokens(self, encrypted_text):
         # Split by separator
         if self.separator in encrypted_text:
             coordinate_pairs = encrypted_text.split(self.separator)
